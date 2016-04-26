@@ -9,7 +9,7 @@
 
     <!-- This creates a Service descriptor, which allows the org.geoserver.ows.Dispatcher
            to locate it. -->
-        <bean id="sourceService-1.0.0" class="org.geoserver.platform.Service">
+        <bean id="sourceService-2.8.3" class="org.geoserver.platform.Service">
     <!-- used to reference the service in the URL -->
         <constructor-arg index="0" value="source"/>
 
@@ -17,7 +17,7 @@
         <constructor-arg index="1" ref="sourceDownload"/>
 
         <!-- a version number for this service -->
-        <constructor-arg index="2" value="1.0.0"/>
+        <constructor-arg index="2" value="2.8.3"/>
 
         <!-- a list of functions for this service -->
         <constructor-arg index="3">
