@@ -458,18 +458,15 @@
         <module>params-extractor</module>
       </modules>
     </profile>
-	<profile>
-      <id>source-download</id>
-      <modules>
-        <module>source-download</module>
-      </modules>
-    </profile>
-	<profile>
+	
+	  <profile>
   <id>hello</id>
   <modules>
     <module>hello</module>
   </modules>
 </profile>
+	
   </profiles>
+
   
 </project>

@@ -3,6 +3,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.geoserver.catalog.Catalog;
+
 public class HelloWorld {
 
   public HelloWorld() {
@@ -11,6 +13,15 @@ public class HelloWorld {
 
   public void sayHello(HttpServletRequest request, HttpServletResponse response)
   throws ServletException, IOException {
-    response.getOutputStream().write( "Hello World".getBytes() );
+	String param = request.getParameter("myParam");
+		
+	/*CatalogRepository catRepo = new CatalogRepository();
+	Catalog cat = catRepo.getCatalog();*/
+	
+	Catalog mcat = MyCatalog.cat;
+	
+	String URL = "fdsfsdfsdfsdfsdf"; /*cat.getCoverageStore(param).getURL();*/
+		
+    response.getOutputStream().write( URL.getBytes());
   }
 }
