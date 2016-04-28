@@ -1,0 +1,23 @@
+<projectDescription>
+  <name>gs-web-sec-jdbc</name>
+  <comment/>
+  <projects>
+    <project>gs-main</project>
+    <project>gs-ows</project>
+    <project>gs-platform</project>
+    <project>gs-sec-jdbc</project>
+    <project>gs-web-core</project>
+    <project>gs-web-sec-core</project>
+    <project>gs-wms</project>
+    <project>gs-wfs</project>
+  </projects>
+  <buildSpec>
+    <buildCommand>
+      <name>org.eclipse.jdt.core.javabuilder</name>
+    </buildCommand>
+  </buildSpec>
+  <natures>
+    <nature>org.eclipse.jdt.core.javanature</nature>
+    <nature>org.springframework.ide.eclipse.core.springnature</nature>
+  </natures>
+</projectDescription>

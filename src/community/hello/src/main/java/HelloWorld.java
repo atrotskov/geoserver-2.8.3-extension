@@ -6,22 +6,23 @@ import javax.servlet.http.HttpServletResponse;
 import org.geoserver.catalog.Catalog;
 
 public class HelloWorld {
-
-  public HelloWorld() {
-    // Do nothing
-  }
-
-  public void sayHello(HttpServletRequest request, HttpServletResponse response)
-  throws ServletException, IOException {
-	String param = request.getParameter("myParam");
-		
-	/*CatalogRepository catRepo = new CatalogRepository();
-	Catalog cat = catRepo.getCatalog();*/
 	
-	Catalog mcat = MyCatalog.cat;
+	private Catalog catalog;
 	
-	String URL = "fdsfsdfsdfsdfsdf"; /*cat.getCoverageStore(param).getURL();*/
+	public HelloWorld() {
+		// do nothing
+	}
+
+	public HelloWorld(Catalog catalog) {
+		this.catalog = catalog;
+	}
+
+	public void sayHello(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		String param = request.getParameter("myParam");
 		
-    response.getOutputStream().write( URL.getBytes());
-  }
+		String url = catalog.getCoverageStore(param).getURL();
+
+		response.getOutputStream().write(url.getBytes());
+	}
 }

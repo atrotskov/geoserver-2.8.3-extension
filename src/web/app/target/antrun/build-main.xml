@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="maven-antrun-" default="main"  >
+<target name="main">
+  <available file="/home/jdev/gis-dev/geoserver/2.8.3/geoserver-2.8.3-extension/src/web/app/../../../data/minimal" property="configIsAvailable"/>
+  <fail unless="configIsAvailable" message="Unable to locate configuration: /home/jdev/gis-dev/geoserver/2.8.3/geoserver-2.8.3-extension/src/web/app/../../../data/minimal"/>
+  <echo message="Copying data dir from /home/jdev/gis-dev/geoserver/2.8.3/geoserver-2.8.3-extension/src/web/app/../../../data/minimal"/>
+  <copy todir="/home/jdev/gis-dev/geoserver/2.8.3/geoserver-2.8.3-extension/src/web/app/src/main/webapp/data">
+    <fileset includes="**/**" dir="/home/jdev/gis-dev/geoserver/2.8.3/geoserver-2.8.3-extension/src/web/app/../../../data/minimal"/>
+  </copy>
+</target>
+</project>
