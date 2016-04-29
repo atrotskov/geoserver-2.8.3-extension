@@ -8,9 +8,7 @@
 		<constructor-arg ref="catalog" />
 	</bean>
 	
-	<bean id="srcDownloadPage" class="SourceDownloadLinkPage">
-	<constructor-arg ref="geoServer" />
-	</bean>
+	
 
 	<!-- This creates a Service descriptor, which allows the org.geoserver.ows.Dispatcher 
 		to locate it. -->
