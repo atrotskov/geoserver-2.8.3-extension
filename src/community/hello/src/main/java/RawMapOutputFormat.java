@@ -1,4 +1,5 @@
 import java.io.IOException;
+import java.io.InputStream;
 
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.MapProducerCapabilities;
@@ -10,6 +11,8 @@ public class RawMapOutputFormat extends AbstractMapOutputFormat {
 	
 	/** the only MIME type this map producer supports */
     static final String MIME_TYPE = "application/octet-stream";
+    
+    private InputStream input;
     
     /** 
      * Default capabilities for RAW format.
@@ -30,8 +33,10 @@ public class RawMapOutputFormat extends AbstractMapOutputFormat {
     
 	@Override
 	public RawMap produceMap(WMSMapContent mapContent) throws ServiceException, IOException {
-		// TODO Auto-generated method stub
-		return null;
+		RawMap result = new RawMap(mapContent, input, MIME_TYPE);
+		result.setContentDispositionHeader(mapContent, ""); // TODO Check this method atrotskov
+		result.setMimeType(MIME_TYPE);
+		return result;
 	}
 
 	@Override
