@@ -15,6 +15,7 @@
     <project>gs-wcs1_0</project>
     <project>gs-wcs1_1</project>
     <project>gs-wcs2_0</project>
+    <project>hello</project>
     <project>gs-sec-jdbc</project>
     <project>gs-sec-ldap</project>
     <project>gs-web-core</project>

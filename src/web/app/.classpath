@@ -212,7 +212,7 @@
   <classpathentry kind="var" path="M2_REPO/javax/activation/activation/1.1/activation-1.1.jar"/>
   <classpathentry kind="src" path="/gs-wcs1_1"/>
   <classpathentry kind="src" path="/gs-wcs2_0"/>
-  <classpathentry kind="var" path="M2_REPO/org/geoserver/hello/1.0/hello-1.0.jar" sourcepath="M2_REPO/org/geoserver/hello/1.0/hello-1.0-sources.jar"/>
+  <classpathentry kind="src" path="/hello"/>
   <classpathentry kind="src" path="/gs-sec-jdbc"/>
   <classpathentry kind="src" path="/gs-sec-ldap"/>
   <classpathentry kind="var" path="M2_REPO/org/springframework/security/spring-security-ldap/3.1.0.RELEASE/spring-security-ldap-3.1.0.RELEASE.jar"/>

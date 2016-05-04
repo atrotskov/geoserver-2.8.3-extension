@@ -1,7 +1,13 @@
 <projectDescription>
   <name>hello</name>
   <comment/>
-  <projects/>
+  <projects>
+    <project>gs-main</project>
+    <project>gs-ows</project>
+    <project>gs-platform</project>
+    <project>gs-wms</project>
+    <project>gs-wfs</project>
+  </projects>
   <buildSpec>
     <buildCommand>
       <name>org.eclipse.jdt.core.javabuilder</name>

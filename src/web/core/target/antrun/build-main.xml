@@ -5,7 +5,7 @@
     <include name="*.properties"/>
     <replacefilter value="2.8.3" token="@project.version@"/>
     <replacefilter value="${build.commit.id}" token="@build.revision@"/>
-    <replacefilter value="27-апр-2016 13:26" token="@build.timestamp@"/>
+    <replacefilter value="04-мая-2016 12:55" token="@build.timestamp@"/>
   </replace>
 </target>
 </project>
