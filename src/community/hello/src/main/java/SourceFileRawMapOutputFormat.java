@@ -21,7 +21,7 @@ public class SourceFileRawMapOutputFormat extends AbstractMapOutputFormat {
 	 * but this hack allows to not edit GeoServerApplication.property were should be placed string
 	 * format.wms.application/octet-stream=Source (RAW format)
 	 * This hack produce some warnings in the geoServer log, but they can be ignored.*/
-    static final String FAKE_MIME_TYPE = "Source (RAW format)";
+    static final String FAKE_MIME_TYPE = "Source file (RAW data)";
     static final String REAL_MIME_TYPE = "application/octet-stream";
     static final String HEADER_KEY = "Content-Disposition";
     
