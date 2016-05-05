@@ -8,8 +8,8 @@
 		<constructor-arg ref="catalog" />
 	</bean>
 	
-	<bean id="MyRawMapOutputFormat" class="MyRawMapOutputFormat">
-	<constructor-arg index="0" ref="geoServer"/>
+	<bean id="SourceFileRawMapOutputFormat" class="SourceFileRawMapOutputFormat">
+	<constructor-arg index="0" ref="catalog"/>
 	<constructor-arg index="1" ref="dataDirectory"/>
 	</bean>
 
