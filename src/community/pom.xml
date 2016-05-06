@@ -459,12 +459,19 @@
       </modules>
     </profile>
 	
-	  <profile>
-  <id>hello</id>
-  <modules>
-    <module>hello</module>
-  </modules>
-</profile>
+    <profile>
+      <id>wms-source-download</id>
+      <modules>
+        <module>wms-source-download</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <id>wms-leaflet</id>
+      <modules>
+        <module>wms-leaflet</module>
+      </modules>
+    </profile>
 	
   </profiles>
 

@@ -191,7 +191,12 @@
 	</dependency>
 	<dependency>
 		<groupId>org.geoserver</groupId>
-		<artifactId>hello</artifactId>
+		<artifactId>wms-source-download</artifactId>
+		<version>1.0</version>
+	</dependency>
+	<dependency>
+		<groupId>org.geoserver</groupId>
+		<artifactId>wms-leaflet</artifactId>
 		<version>1.0</version>
 	</dependency>
   </dependencies>
@@ -1355,11 +1360,21 @@
       </dependencies>
     </profile>
     <profile>
-      <id>hello</id>
+      <id>wms-source-download</id>
       <dependencies>
         <dependency>
           <groupId>org.geoserver</groupId>
-		  <artifactId>hello</artifactId>
+		  <artifactId>wms-source-download</artifactId>
+		  <version>1.0</version>
+        </dependency>              
+      </dependencies>      
+   </profile>
+   <profile>
+      <id>wms-leaflet</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver</groupId>
+		  <artifactId>wms-leaflet</artifactId>
 		  <version>1.0</version>
         </dependency>              
       </dependencies>      
