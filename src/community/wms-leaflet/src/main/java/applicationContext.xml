@@ -2,7 +2,24 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 
 <beans>
+
+	<bean id="leafletResourceLoader" class="LeafletResourceLoader">
+	</bean>
+
+	<bean id="leafletResourceLoaderImpl" class="org.geoserver.platform.Service">
+		<constructor-arg index="0" value="leafletResourcesService" />
+		<constructor-arg index="1" ref="leafletResourceLoader" />
+		<constructor-arg index="2" value="1.0.0" />
+		<constructor-arg index="3">
+			<list>
+				<value>getRes</value>
+			</list>
+		</constructor-arg>
+	</bean>
+
 	<bean id="LeafletMapOutputFormat" class="LeafletMapOutputFormat">
 		<constructor-arg index="0" ref="wms" />
+		<constructor-arg index="1" ref="catalog" />
 	</bean>
+
 </beans>

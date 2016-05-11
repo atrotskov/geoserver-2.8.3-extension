@@ -13,6 +13,8 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.ows.LocalLayer;
 import org.geoserver.ows.LocalWorkspace;
 import org.geoserver.ows.URLMangler.URLType;
@@ -45,6 +47,7 @@ import freemarker.template.TemplateException;
  * @see RawMapResponse
  */
 
+@SuppressWarnings("deprecation")
 public class LeafletMapOutputFormat implements GetMapOutputFormat {
 	
 	/** A logger for this class. */
@@ -59,6 +62,8 @@ public class LeafletMapOutputFormat implements GetMapOutputFormat {
      * System property name to toggle OL3 support.
      */
     public static final String ENABLE_OL3 = "ENABLE_OL3";
+    
+    private Catalog catalog;
 
     /**
      * The formats accepted in a GetMap request for this producer and stated in getcaps
@@ -115,8 +120,9 @@ public class LeafletMapOutputFormat implements GetMapOutputFormat {
      */
     private WMS wms;
 
-    public LeafletMapOutputFormat(WMS wms) {
+    public LeafletMapOutputFormat(WMS wms, Catalog catalog) {
         this.wms = wms;
+        this.catalog = catalog;
     }
 
     /**
@@ -154,6 +160,14 @@ public class LeafletMapOutputFormat implements GetMapOutputFormat {
             map.put("styles", styleNames(mapContent));
             GetMapRequest request = mapContent.getRequest();
             map.put("request", request);
+            String layerName = mapContent.layers().get(0).getTitle();
+            ReferencedEnvelope latLonBBox = catalog.getLayerByName(layerName).getResource().getLatLonBoundingBox();
+      
+            map.put("maxX", latLonBBox.getMaxX());
+            map.put("maxY", latLonBBox.getMaxY());
+            map.put("minX", latLonBBox.getMinX());
+            map.put("minY", latLonBBox.getMinY());
+            
             map.put("yx", String.valueOf(isWms13FlippedCRS(request.getCrs())));
             map.put("maxResolution", new Double(getMaxResolution(mapContent.getRenderingArea())));
 
@@ -190,10 +204,13 @@ public class LeafletMapOutputFormat implements GetMapOutputFormat {
             } else {
                 map.put("layerName", "Geoserver layers");
             }
+            
+            
 
             template.setOutputEncoding("UTF-8");
             ByteArrayOutputStream buff = new ByteArrayOutputStream();
             template.process(map, new OutputStreamWriter(buff, Charset.forName("UTF-8")));
+           
             RawMap result = new RawMap(mapContent, buff, MIME_TYPE);
             return result;
         } catch (TemplateException e) {
