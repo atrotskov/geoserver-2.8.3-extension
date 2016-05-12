@@ -14,7 +14,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.LayerInfo;
 import org.geoserver.ows.LocalLayer;
 import org.geoserver.ows.LocalWorkspace;
 import org.geoserver.ows.URLMangler.URLType;
@@ -160,13 +159,31 @@ public class LeafletMapOutputFormat implements GetMapOutputFormat {
             map.put("styles", styleNames(mapContent));
             GetMapRequest request = mapContent.getRequest();
             map.put("request", request);
-            String layerName = mapContent.layers().get(0).getTitle();
-            ReferencedEnvelope latLonBBox = catalog.getLayerByName(layerName).getResource().getLatLonBoundingBox();
-      
-            map.put("maxX", latLonBBox.getMaxX());
-            map.put("maxY", latLonBBox.getMaxY());
-            map.put("minX", latLonBBox.getMinX());
-            map.put("minY", latLonBBox.getMinY());
+            
+            Double rawMaxX = request.getBbox().getMaxX();
+            Double rawMaxY = request.getBbox().getMaxY();
+            Double rawMinX = request.getBbox().getMinX();
+            Double rawMinY = request.getBbox().getMinY();
+            
+            if ((rawMaxX.longValue() >= -180 && rawMaxX.longValue() <= 180) ||
+            		(rawMinX.longValue() >= -180 && rawMinX.longValue() <= 180) ||
+            		(rawMaxY.longValue() >= -90 && rawMaxY.longValue() <= 90) ||
+            		(rawMinY.longValue() >= -90 && rawMinY.longValue() <= 90)) {
+            	map.put("maxX", rawMaxX);
+                map.put("maxY", rawMaxY);
+                map.put("minX", rawMinX);
+                map.put("minY", rawMinY);
+            } else {
+            	String layerName = mapContent.layers().get(0).getTitle();
+                ReferencedEnvelope latLonBBox = catalog.getLayerByName(layerName)
+                		.getResource().getLatLonBoundingBox();
+            	map.put("maxX", latLonBBox.getMaxX());
+                map.put("maxY", latLonBBox.getMaxY());
+                map.put("minX", latLonBBox.getMinX());
+                map.put("minY", latLonBBox.getMinY());
+            }
+
+
             
             map.put("yx", String.valueOf(isWms13FlippedCRS(request.getCrs())));
             map.put("maxResolution", new Double(getMaxResolution(mapContent.getRenderingArea())));
@@ -204,8 +221,6 @@ public class LeafletMapOutputFormat implements GetMapOutputFormat {
             } else {
                 map.put("layerName", "Geoserver layers");
             }
-            
-            
 
             template.setOutputEncoding("UTF-8");
             ByteArrayOutputStream buff = new ByteArrayOutputStream();

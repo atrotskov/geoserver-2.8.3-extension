@@ -1,3 +1,4 @@
+<#setting locale="en_US">
 <!DOCTYPE html>
 <html>
 <head>
@@ -82,11 +83,11 @@
     
         var map = L.map('map', {
             layers: [geoServerWmsLayer, layerOSM],
-            zoom: 13,
-            center: bounds.getCenter()
+            /*zoom: 13,
+            center: bounds.getCenter()*/
         });
         
-        /*map.fitBounds(bounds);*/
+        map.fitBounds(bounds);
                 
         var baseLayers = {
 			"geoServerWms": geoServerWmsLayer,
