@@ -4,6 +4,8 @@
 <beans>
 
 	<bean id="leafletResourceLoader" class="LeafletResourceLoader">
+		<constructor-arg index="0" ref="catalog" />
+		<constructor-arg index="1" ref="dataDirectory" />
 	</bean>
 
 	<bean id="leafletResourceLoaderImpl" class="org.geoserver.platform.Service">
@@ -13,6 +15,7 @@
 		<constructor-arg index="3">
 			<list>
 				<value>getRes</value>
+				<value>getSource</value>
 			</list>
 		</constructor-arg>
 	</bean>
