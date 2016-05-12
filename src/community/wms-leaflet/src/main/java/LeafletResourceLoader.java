@@ -1,7 +1,6 @@
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URISyntaxException;
 
@@ -21,27 +20,20 @@ public class LeafletResourceLoader {
 			throws ServletException, IOException, URISyntaxException {
 		ServletContext context = request.getSession().getServletContext();
 		String path = request.getParameter("path");
-
-		String sourcePath = LeafletResourceLoader.class.getProtectionDomain().getCodeSource().getLocation().toURI()
-				.getPath() + path;
-		File sourceFile = new File(sourcePath);
-		FileInputStream inputStream = null;
+		ClassLoader classLoader = LeafletResourceLoader.class.getClassLoader();
+		InputStream inputStream = null;
 		OutputStream outputStream = null;
 		try {
-			inputStream = new FileInputStream(sourceFile);
-
-			String mimeType = context.getMimeType(sourcePath);
+			String mimeType = context.getMimeType(classLoader.getResource(path).toURI().toString());
 			if (mimeType == null) {
 				mimeType = "text/plain";
 			}
-
 			response.setContentType(mimeType);
-
+			inputStream = classLoader.getResourceAsStream(path);			
 			outputStream = response.getOutputStream();
-
 			byte[] buffer = new byte[4096];
 			int bytesRead = -1;
-
+			
 			while ((bytesRead = inputStream.read(buffer)) != -1) {
 				outputStream.write(buffer, 0, bytesRead);
 			}

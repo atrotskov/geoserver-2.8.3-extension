@@ -30,7 +30,8 @@
         // Base layers
 		var geoServerWmsLayer = L.tileLayer.wms('${baseUrl}/${servicePath}?', {
 		layers: '${layerName}',
-		format: 'image/png'
+		format: 'image/png',
+		transparent: true
 		});
 		
         var layerOSM = new L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -90,14 +91,17 @@
         map.fitBounds(bounds);
                 
         var baseLayers = {
-			"geoServerWms": geoServerWmsLayer,
             "OpenStreetMap": layerOSM,
             "MapQuest <div class='leaflet-control-layers-separator' style='margin-right: -6px;'></div>": layerMapQuest,
             "Bing Aerial": layerBingAerial,
             "Mapbox Imagery": layerMapboxImagery
         };
+        
+        var overlayLayers = {
+			"geoServerWms": geoServerWmsLayer
+        };
 
-        var overlayLayerControl = L.control.layers(baseLayers, null, {   
+        var overlayLayerControl = L.control.layers(baseLayers, overlayLayers, {   
             collapsed: false
         }).addTo(map);
         
