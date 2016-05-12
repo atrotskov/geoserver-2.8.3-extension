@@ -2,15 +2,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.geoserver.catalog.Catalog;
@@ -21,20 +16,12 @@ import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetMapOutputFormat;
 import org.geoserver.wms.GetMapRequest;
-import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.MapProducerCapabilities;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.map.RawMap;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.map.Layer;
-import org.geotools.map.WMSLayer;
-import org.geotools.referencing.CRS;
-import org.geotools.referencing.CRS.AxisOrder;
 import org.geotools.util.logging.Logging;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.crs.ProjectedCRS;
 
 import freemarker.ext.beans.BeansWrapper;
 import freemarker.template.Configuration;
@@ -56,6 +43,9 @@ public class LeafletMapOutputFormat implements GetMapOutputFormat {
      * The mime type for the response header
      */
     public static final String MIME_TYPE = "text/html; subtype=leaflet";
+    
+    /* For correct representation in the dropdown menu*/
+    public static final String FAKE_MIME_TYPE = "Leaflet";
 
     /**
      * System property name to toggle OL3 support.
@@ -68,7 +58,7 @@ public class LeafletMapOutputFormat implements GetMapOutputFormat {
      * The formats accepted in a GetMap request for this producer and stated in getcaps
      */
     private static final Set<String> OUTPUT_FORMATS = new HashSet<String>(Arrays.asList(
-            "application/leaflet", "leaflet", MIME_TYPE));
+            "application/leaflet", "leaflet"/*, MIME_TYPE*/));
     
     /** 
      * Default capabilities for OpenLayers format.
@@ -135,7 +125,8 @@ public class LeafletMapOutputFormat implements GetMapOutputFormat {
      * @see org.geoserver.wms.GetMapOutputFormat#getMimeType()
      */
     public String getMimeType() {
-        return MIME_TYPE;
+    	/*FAKE_MIME_TYPE instead MIME_TYPE for correct representation in the dropdown menu*/
+        return FAKE_MIME_TYPE;
     }
 
     /**
@@ -146,17 +137,12 @@ public class LeafletMapOutputFormat implements GetMapOutputFormat {
         try {
             // create the template
             String templateName = "LeafletMapTemplate.ftl";
-            /*boolean useOpenLayers3 = isOL3Enabled(mapContent) && browserSupportsOL3(mapContent);
-            if(useOpenLayers3) {
-                templateName = "OpenLayers3MapTemplate.ftl";
-            } else {
-                templateName = "OpenLayers2MapTemplate.ftl";                
-            }*/
+     
             Template template = cfg.getTemplate(templateName);
             HashMap<String, Object> map = new HashMap<String, Object>();
-            map.put("context", mapContent);
+            /*map.put("context", mapContent);
             map.put("pureCoverage", hasOnlyCoverages(mapContent));
-            map.put("styles", styleNames(mapContent));
+            map.put("styles", styleNames(mapContent));*/
             GetMapRequest request = mapContent.getRequest();
             map.put("request", request);
             
@@ -185,8 +171,8 @@ public class LeafletMapOutputFormat implements GetMapOutputFormat {
 
 
             
-            map.put("yx", String.valueOf(isWms13FlippedCRS(request.getCrs())));
-            map.put("maxResolution", new Double(getMaxResolution(mapContent.getRenderingArea())));
+            /*map.put("yx", String.valueOf(isWms13FlippedCRS(request.getCrs())));
+            map.put("maxResolution", new Double(getMaxResolution(mapContent.getRenderingArea())));*/
 
             String baseUrl = ResponseUtils.buildURL(request.getBaseUrl(), "/", null, URLType.RESOURCE);
             String queryString = null;
@@ -213,8 +199,8 @@ public class LeafletMapOutputFormat implements GetMapOutputFormat {
             }
             map.put("servicePath", servicePath);
 
-            map.put("parameters", getLayerParameter(request.getRawKvp()));
-            map.put("units", getUnits(request));
+            /*map.put("parameters", getLayerParameter(request.getRawKvp()));
+            map.put("units", getUnits(request));*/
 
             if (mapContent.layers().size() == 1) {
                 map.put("layerName", mapContent.layers().get(0).getTitle());
@@ -226,7 +212,7 @@ public class LeafletMapOutputFormat implements GetMapOutputFormat {
             ByteArrayOutputStream buff = new ByteArrayOutputStream();
             template.process(map, new OutputStreamWriter(buff, Charset.forName("UTF-8")));
            
-            RawMap result = new RawMap(mapContent, buff, MIME_TYPE);
+            RawMap result = new RawMap(mapContent, buff, FAKE_MIME_TYPE);
             return result;
         } catch (TemplateException e) {
             throw new ServiceException(e);
@@ -263,7 +249,7 @@ public class LeafletMapOutputFormat implements GetMapOutputFormat {
         }
     }*/
 
-    private boolean isWms13FlippedCRS(CoordinateReferenceSystem crs) {
+    /*private boolean isWms13FlippedCRS(CoordinateReferenceSystem crs) {
         try {
             String code = "EPSG:" + CRS.lookupIdentifier(crs, false);
             code = WMS.toInternalSRS(code, WMS.version("1.3.0"));
@@ -273,7 +259,7 @@ public class LeafletMapOutputFormat implements GetMapOutputFormat {
             LOGGER.log(Level.WARNING, "Failed to determine CRS axis order, assuming is EN", e);
             return false;
         }
-    }
+    }*/
 
     /**
      * Guesses if the map context is made only of coverage layers by looking at the wrapping feature
@@ -282,7 +268,7 @@ public class LeafletMapOutputFormat implements GetMapOutputFormat {
      * @param mapContent
      * @return
      */
-    private boolean hasOnlyCoverages(WMSMapContent mapContent) {
+    /*private boolean hasOnlyCoverages(WMSMapContent mapContent) {
         for (Layer layer : mapContent.layers()) {
             FeatureType schema = layer.getFeatureSource().getSchema();
             boolean grid = schema.getName().getLocalPart().equals("GridCoverage")
@@ -292,15 +278,15 @@ public class LeafletMapOutputFormat implements GetMapOutputFormat {
                 return false;
         }
         return true;
-    }
+    }*/
 
-    private List<String> styleNames(WMSMapContent mapContent) {
+    /*private List<String> styleNames(WMSMapContent mapContent) {
         if (mapContent.layers().size() != 1 || mapContent.getRequest() == null)
             return Collections.emptyList();
 
         MapLayerInfo info = mapContent.getRequest().getLayers().get(0);
         return info.getOtherStyleNames();
-    }
+    }*/
 
     /**
      * OL does support only a limited number of unit types, we have to try and return one of those,
@@ -310,7 +296,7 @@ public class LeafletMapOutputFormat implements GetMapOutputFormat {
      * @param request
      * @return
      */
-    private String getUnits(GetMapRequest request) {
+    /*private String getUnits(GetMapRequest request) {
         CoordinateReferenceSystem crs = request.getCrs();
         // first rough approximation, meters for projected CRS, degrees for the
         // others
@@ -336,7 +322,7 @@ public class LeafletMapOutputFormat implements GetMapOutputFormat {
             LOGGER.log(Level.WARNING, "Error trying to determine unit of measure", e);
         }
         return result;
-    }
+    }*/
     
     /**
      * OL3 does support a very limited set of unit types, we have to try and return one of those,
@@ -372,7 +358,7 @@ public class LeafletMapOutputFormat implements GetMapOutputFormat {
      * @param rawKvp
      * @return
      */
-    private List<Map<String, String>> getLayerParameter(Map<String, String> rawKvp) {
+    /*private List<Map<String, String>> getLayerParameter(Map<String, String> rawKvp) {
         List<Map<String, String>> result = new ArrayList<Map<String, String>>(rawKvp.size());
 
         for (Map.Entry<String, String> en : rawKvp.entrySet()) {
@@ -391,7 +377,7 @@ public class LeafletMapOutputFormat implements GetMapOutputFormat {
         }
 
         return result;
-    }
+    }*/
 
     /**
      * Makes sure the url does not end with "/", otherwise we would have URL lik
@@ -408,12 +394,12 @@ public class LeafletMapOutputFormat implements GetMapOutputFormat {
         }
     }
 
-    private double getMaxResolution(ReferencedEnvelope areaOfInterest) {
+    /*private double getMaxResolution(ReferencedEnvelope areaOfInterest) {
         double w = areaOfInterest.getWidth();
         double h = areaOfInterest.getHeight();
 
         return ((w > h) ? w : h) / 256;
-    }
+    }*/
 
     public MapProducerCapabilities getCapabilities(String format) {
         return CAPABILITIES;
