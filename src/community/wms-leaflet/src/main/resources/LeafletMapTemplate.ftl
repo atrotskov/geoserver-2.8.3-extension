@@ -5,6 +5,7 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>Leaflet Map Template</title>
     <link rel="stylesheet" href="${baseUrl}/ows?request=getRes&service=leafletResourcesService&version=1.0.0&path=leaflet/leaflet.css" />
+    <link rel="stylesheet" href="${baseUrl}/ows?request=getRes&service=leafletResourcesService&version=1.0.0&path=easy-button/easy-button.css" />
 </head>
 <body>
     <style>
@@ -23,7 +24,8 @@
 
     <div id="map"></div>
 	
-    <script src="${baseUrl}/ows?request=getRes&service=leafletResourcesService&version=1.0.0&path=leaflet/leaflet.js"></script> 
+    <script src="${baseUrl}/ows?request=getRes&service=leafletResourcesService&version=1.0.0&path=leaflet/leaflet.js"></script>
+    <script src="${baseUrl}/ows?request=getRes&service=leafletResourcesService&version=1.0.0&path=easy-button/easy-button.js"></script> 
 
     <script>
     
@@ -104,6 +106,12 @@
         var overlayLayerControl = L.control.layers(baseLayers, overlayLayers, {   
             collapsed: false
         }).addTo(map);
+        
+        var helloPopup = L.popup().setContent('Hello World!');
+
+		L.easyButton('&veeeq;', function(btn, map){
+    		helloPopup.setLatLng(map.getCenter()).openOn(map);
+		}).addTo(map);
         
         
     </script>
