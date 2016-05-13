@@ -25,7 +25,9 @@
     <div id="map"></div>
 	
     <script src="${baseUrl}/ows?request=getRes&service=leafletResourcesService&version=1.0.0&path=leaflet/leaflet.js"></script>
-    <script src="${baseUrl}/ows?request=getRes&service=leafletResourcesService&version=1.0.0&path=easy-button/easy-button.js"></script> 
+    <script src="${baseUrl}/ows?request=getRes&service=leafletResourcesService&version=1.0.0&path=easy-button/easy-button.js"></script>
+    <script src="${baseUrl}/ows?request=getRes&service=leafletResourcesService&version=1.0.0&path=jquery/jquery-2.2.3.js"></script>
+    <script src="${baseUrl}/ows?request=getRes&service=leafletResourcesService&version=1.0.0&path=jquery/jquery.fileDownload.js"></script>
 
     <script>
     
@@ -100,7 +102,7 @@
         };
         
         var overlayLayers = {
-			"geoServerWms": geoServerWmsLayer
+			"${layerName}": geoServerWmsLayer
         };
 
         var overlayLayerControl = L.control.layers(baseLayers, overlayLayers, {   
@@ -109,8 +111,9 @@
         
         var helloPopup = L.popup().setContent('Hello World!');
 
-		L.easyButton('&veeeq;', function(btn, map){
-    		helloPopup.setLatLng(map.getCenter()).openOn(map);
+		L.easyButton('<strong>&veeeq;</strong>', function(){
+			var URL = '${baseUrl}/ows?request=getSource&service=leafletResourcesService&version=1.0.0&layer=${layerName}';
+			$.fileDownload(URL);
 		}).addTo(map);
         
         
