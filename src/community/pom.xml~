@@ -472,13 +472,6 @@
         <module>wms-leaflet</module>
       </modules>
     </profile>
-
-    <profile>
-      <id>source-downloader</id>
-      <modules>
-        <module>source-downloader</module>
-      </modules>
-    </profile>
 	
   </profiles>
 

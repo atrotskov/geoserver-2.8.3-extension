@@ -3,14 +3,14 @@
 
 <beans>
 
-	<bean id="leafletResourceLoader" class="LeafletResourceLoader">
+	<bean id="sourceDownloader" class="SourceDownloader">
 		<constructor-arg index="0" ref="catalog" />
 		<constructor-arg index="1" ref="dataDirectory" />
 	</bean>
 
-	<bean id="leafletResourceLoaderImpl" class="org.geoserver.platform.Service">
-		<constructor-arg index="0" value="leafletResourcesService" />
-		<constructor-arg index="1" ref="leafletResourceLoader" />
+	<bean id="sourceDownloaderImpl" class="org.geoserver.platform.Service">
+		<constructor-arg index="0" value="sourceDownloaderService" />
+		<constructor-arg index="1" ref="sourceDownloader" />
 		<constructor-arg index="2" value="1.0.0" />
 		<constructor-arg index="3">
 			<list>
