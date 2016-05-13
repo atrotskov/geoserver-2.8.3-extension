@@ -30,7 +30,6 @@
     <script src="${baseUrl}/ows?request=getRes&service=leafletResourcesService&version=1.0.0&path=jquery/jquery.fileDownload.js"></script>
 
     <script>
-    
         // Base layers
 		var geoServerWmsLayer = L.tileLayer.wms('${baseUrl}/${servicePath}?', {
 		layers: '${layerName}',
@@ -115,8 +114,6 @@
 			var URL = '${baseUrl}/ows?request=getSource&service=leafletResourcesService&version=1.0.0&layer=${layerName}';
 			$.fileDownload(URL);
 		}).addTo(map);
-        
-        
     </script>
 </body>
 </html>
