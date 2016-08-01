@@ -6,6 +6,7 @@
     <title>Leaflet Map Template</title>
     <link rel="stylesheet" href="${baseUrl}/ows?request=getRes&service=leafletResourcesService&version=1.0.0&path=leaflet/leaflet.css" />
     <link rel="stylesheet" href="${baseUrl}/ows?request=getRes&service=leafletResourcesService&version=1.0.0&path=easy-button/easy-button.css" />
+    <link rel="stylesheet" href="${baseUrl}/ows?request=getRes&service=leafletResourcesService&version=1.0.0&path=leaflet-draw/leaflet.draw.css" />
 </head>
 <body>
     <style>
@@ -115,6 +116,9 @@
 			var URL = '${baseUrl}/ows?request=getSource&service=leafletResourcesService&version=1.0.0&layer=${layerName}';
 			$.fileDownload(URL);
 		}).addTo(map);
+		
+		var featureGroup = new L.featureGroup();
+        map.addLayer(featureGroup);
 		
 		
 		// add draw polygon control
