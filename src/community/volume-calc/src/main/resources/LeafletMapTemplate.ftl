@@ -28,7 +28,6 @@
     <script src="${baseUrl}/ows?request=getRes&service=leafletResourcesService&version=1.0.0&path=easy-button/easy-button.js"></script>
     <script src="${baseUrl}/ows?request=getRes&service=leafletResourcesService&version=1.0.0&path=jquery/jquery-2.2.3.js"></script>
     <script src="${baseUrl}/ows?request=getRes&service=leafletResourcesService&version=1.0.0&path=jquery/jquery.fileDownload.js"></script>
-    <script src="${baseUrl}/ows?request=getRes&service=leafletResourcesService&version=1.0.0&path=leaflet-draw/leaflet.draw.js"></script>
 
     <script>
         // Base layers
@@ -115,57 +114,6 @@
 			var URL = '${baseUrl}/ows?request=getSource&service=leafletResourcesService&version=1.0.0&layer=${layerName}';
 			$.fileDownload(URL);
 		}).addTo(map);
-		
-		
-		// add draw polygon control
-		var drawControl = new L.Control.Draw({
-			position: 'topright',
-			draw: {
-				polyline: false,
-				polygon: {
-					allowIntersection: false,
-					showArea: true,
-					drawError: {
-						color: '#b00b00',
-						timeout: 1000
-					},
-					shapeOptions: {
-                        color: '#8b0000',
-                        clickable: false,
-                        fillOpacity: 0.1,
-                        weight: 4
-					}
-				},
-				rectangle: false,
-				circle: false,
-				marker: false
-			},
-			edit: {
-				featureGroup: featureGroup,
-				remove: false,
-                edit: false
-			}
-		});
-		map.addControl(drawControl);
-        
-                
-        map.on('draw:created', function (e) {
-            var layer = e.layer;
-            
-            featureGroup.clearLayers();
-            featureGroup.addLayer(layer);
- 
-            var polygonData = JSON.stringify(layer.toGeoJSON());
-            console.log('polygon GeoJSON data: ', polygonData);
- 
-        });
-        
-                
-        L.easyButton('<span class="send-btn">&curren;</span>', function(){
-            var data = featureGroup.toGeoJSON()   
-            console.log('polygon GeoJSON data: ', JSON.stringify(data));
-        }).addTo(map);
-		
     </script>
 </body>
 </html>
