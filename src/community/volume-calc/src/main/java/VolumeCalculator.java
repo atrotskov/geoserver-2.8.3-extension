@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -40,6 +42,11 @@ public class VolumeCalculator {
 		String coverageStoreId = catalog.getCoverage(coverageId).getStore().getId();
 		String pathFromXml = catalog.getCoverageStore(coverageStoreId).getURL();
 		
+		Pattern p = Pattern.compile("([0-9]*\\.[0-9]*),([0-9]*\\.[0-9]*)");
+		Matcher m = p.matcher(geoJSON);
+		while(m.find()){
+			System.out.println("совпало - " +  m.group(1) + " / " + m.group(2));
+		}
 		
 		File downloadFile = null;
 		try {
@@ -47,6 +54,8 @@ public class VolumeCalculator {
 		} catch (FileNotFoundException e) {
 			response.getWriter().write(TEXT_RESPONSE_FILE_NOT_FOUND + e);
 		}
+		
+		
 		
 		GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory();
 
