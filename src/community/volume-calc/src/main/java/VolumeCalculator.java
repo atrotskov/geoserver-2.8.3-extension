@@ -1,27 +1,19 @@
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geotools.geometry.jts.JTSFactoryFinder;
-
 import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Polygon;
 
 public class VolumeCalculator {
+	
 	
 	private Catalog catalog;
 	private GeoServerDataDirectory geoServerDataDir;
@@ -42,11 +34,9 @@ public class VolumeCalculator {
 		String coverageStoreId = catalog.getCoverage(coverageId).getStore().getId();
 		String pathFromXml = catalog.getCoverageStore(coverageStoreId).getURL();
 		
-		Pattern p = Pattern.compile("([0-9]*\\.[0-9]*),([0-9]*\\.[0-9]*)");
-		Matcher m = p.matcher(geoJSON);
-		while(m.find()){
-			System.out.println("совпало - " +  m.group(1) + " / " + m.group(2));
-		}
+		Coordinate[] coords = GeoTiffUtils.extractCoordinates(geoJSON);
+		GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory();
+		Polygon polygon = geometryFactory.createPolygon(coords);
 		
 		File downloadFile = null;
 		try {
@@ -54,21 +44,12 @@ public class VolumeCalculator {
 		} catch (FileNotFoundException e) {
 			response.getWriter().write(TEXT_RESPONSE_FILE_NOT_FOUND + e);
 		}
-		
-		
-		
-		GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory();
-
-		Coordinate[] coords  =
-		   new Coordinate[] {new Coordinate(4, 0), new Coordinate(2, 2),
-		                     new Coordinate(4, 4), new Coordinate(6, 2),                    
-		                     new Coordinate(4, 0)};
-
-		Polygon polygon = geometryFactory.createPolygon(coords);
+			
 		
 		response.getWriter().write("all work");
 	}
-	
+
+		
 	private File getFile(String geoServerDataDir, String fileFromXml) throws FileNotFoundException {
 		
 		// Replace path divider from "\" to "/" if need
