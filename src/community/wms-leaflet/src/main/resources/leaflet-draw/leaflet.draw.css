@@ -22,12 +22,12 @@
 }
 
 .leaflet-draw-toolbar a {
-	background-image: url('images/spritesheet.png');
+	background-image: url('http://localhost:8080/geoserver/ows?request=getRes&service=leafletResourcesService&version=1.0.0&path=leaflet-draw/images/spritesheet.png');
 	background-repeat: no-repeat;
 }
 
 .leaflet-retina .leaflet-draw-toolbar a {
-	background-image: url('images/spritesheet-2x.png');
+	background-image: url('http://localhost:8080/geoserver/ows?request=getRes&service=leafletResourcesService&version=1.0.0&path=leaflet-draw/images/spritesheet-2x.png');
 	background-size: 270px 30px;
 }
 

@@ -30,6 +30,7 @@
     <script src="${baseUrl}/ows?request=getRes&service=leafletResourcesService&version=1.0.0&path=jquery/jquery-2.2.3.js"></script>
     <script src="${baseUrl}/ows?request=getRes&service=leafletResourcesService&version=1.0.0&path=jquery/jquery.fileDownload.js"></script>
     <script src="${baseUrl}/ows?request=getRes&service=leafletResourcesService&version=1.0.0&path=leaflet-draw/leaflet.draw.js"></script>
+    <script src="${baseUrl}/ows?request=getRes&service=leafletResourcesService&version=1.0.0&path=leaflet-draw/leaflet.draw-src.js"></script>
 
     <script>
         // Base layers
@@ -160,14 +161,24 @@
             featureGroup.addLayer(layer);
  
             var polygonData = JSON.stringify(layer.toGeoJSON());
-            console.log('polygon GeoJSON data: ', polygonData);
+            var sendURL = "${baseUrl}/ows";
+            $.get(sendURL,{
+            	request: "sendVolume",
+            	service: "volumeCalculatorService",
+            	version: "1.0.0",
+            	layer:   "${layerName}",
+            	geoData: polygonData
+            }).done(function(data){
+            	alert("Response is: " + data)
+            });            
+            /*alert(polygonData);*/
  
         });
         
                 
         L.easyButton('<span class="send-btn">&curren;</span>', function(){
             var data = featureGroup.toGeoJSON()   
-            console.log('polygon GeoJSON data: ', JSON.stringify(data));
+            alert(JSON.stringify(data));
         }).addTo(map);
 		
     </script>

@@ -479,6 +479,13 @@
         <module>source-downloader</module>
       </modules>
     </profile>
+
+    <profile>
+      <id>volume-calc</id>
+      <modules>
+        <module>volume-calc</module>
+      </modules>
+    </profile>
 	
   </profiles>
 
