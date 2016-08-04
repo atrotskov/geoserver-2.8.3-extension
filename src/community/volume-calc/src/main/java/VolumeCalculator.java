@@ -39,6 +39,8 @@ public class VolumeCalculator {
 		String coverageStoreId = catalog.getCoverage(coverageId).getStore().getId();
 		String pathFromXml = catalog.getCoverageStore(coverageStoreId).getURL();
 		
+		ResaultResponse resResponse = new ResaultResponse();
+		
 		/*Получаем файл, получаем необходимую информацию о GeoTIFF*/		
 		GridCoverage2DReader reader = new GeoTiffReader(getFile(dataDir, pathFromXml));
 		GridEnvelope dimensions = reader.getOriginalGridRange();
@@ -50,7 +52,7 @@ public class VolumeCalculator {
 			response.getWriter().write("Inside poligon\n test");
 		}
 		
-		GeoTiffUtils.readGeoTiff(coords, reader);
+		GeoTiffUtils.readGeoTiff(coords, reader, resResponse);
 		
 		
 		File downloadFile = null;
@@ -59,17 +61,17 @@ public class VolumeCalculator {
 		} catch (FileNotFoundException e) {
 			response.getWriter().write(TEXT_RESPONSE_FILE_NOT_FOUND + e);
 		}
-			
-		
-		response.getWriter().write("all work");
 		
 		long stopTime = System.currentTimeMillis();
 		long elapsedTime = stopTime - startTime;
-	    System.out.println("Execution time:" + elapsedTime);
+		
+	    resResponse.setQueryExecTime(elapsedTime);
+		
+		response.getWriter().write(resResponse.toString());
+		
+		
+	    
 	}
-
-	
-
 		
 	private File getFile(String geoServerDataDir, String fileFromXml) throws FileNotFoundException {
 		

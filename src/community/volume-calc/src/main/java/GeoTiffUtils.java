@@ -3,7 +3,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import org.geotools.coverage.grid.GridCoordinates2D;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridEnvelope2D;
@@ -14,12 +13,13 @@ import org.geotools.geometry.Envelope2D;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.JTSFactoryFinder;
 import org.geotools.referencing.CRS;
+import org.opengis.geometry.DirectPosition;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
-
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Polygon;
 
@@ -45,6 +45,24 @@ public class GeoTiffUtils {
 	
 	public static CoordinateReferenceSystem getTargetCRS(GridCoverage2D coverage) {
 		return coverage.getCoordinateReferenceSystem();
+	}
+	
+	public static double getBasePlaneValue(Coordinate[] coords, GridCoverage2DReader reader) throws IOException {
+		GridCoverage2D coverage = reader.read(null);
+		//GridGeometry2D geometry = coverage.getGridGeometry();
+		int numBands = reader.getGridCoverageCount();
+		double[] vals = new double[numBands];
+		
+		double minValue = 20000.0;
+		
+		for (Coordinate coordinate : coords) {
+			DirectPosition c = new DirectPosition2D(coordinate.x, coordinate.y);
+			double resault = coverage.evaluate(c, vals)[0];
+			if (resault < minValue) {
+				minValue = resault;
+			}
+		}
+		return minValue;
 	}
 	
 	public static Coordinate[] convertCoordinates(GridCoverage2D coverage, Coordinate[] coords)
@@ -103,37 +121,41 @@ public class GeoTiffUtils {
 		return pixEnv1.height * pixEnv1.width;		
 	}
 	
-	public static void readGeoTiff(Coordinate[] coords, GridCoverage2DReader reader)
+	public static void readGeoTiff(Coordinate[] coords, GridCoverage2DReader reader, ResaultResponse resResponse)
 			throws IOException, TransformException, FactoryException {
 		GridCoverage2D coverage = reader.read(null);
 		GridGeometry2D geometry = coverage.getGridGeometry();
 		int numBands = reader.getGridCoverageCount();
-		
+		double[] vals = new double[numBands];
 		
 		
 		/*Обрабатываем geoJson, получаем координаты, создаем по координатам полигон*/
 		
 		coords = GeoTiffUtils.convertCoordinates(coverage, coords);
 		Coordinate[] extrimeCorners = GeoTiffUtils.getExtremeCorners(coords);
-		
-		
+				
 		GridCoordinates2D startPosition = geometry.worldToGrid(
 				new DirectPosition2D(extrimeCorners[0].x, extrimeCorners[0].y));
 		GridCoordinates2D endPosition = geometry.worldToGrid(
 				new DirectPosition2D(extrimeCorners[1].x, extrimeCorners[1].y));
 		
 		GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory();
-		Polygon polygon = geometryFactory.createPolygon(coords);
+		Polygon polygon = geometryFactory.createPolygon(coords);		
 		
-		double[] vals = new double[numBands];
 		
-		int popali = 0;
-		int nepopali = 0;
-		int repPoint = 127;
+				
 		
+		resResponse.setArea(polygon.getArea());
+		resResponse.setPerimeter(polygon.getLength());
+
+		double repPoint = getBasePlaneValue(coords, reader);
+		double minHeight = 20000.0;
+		double maxHeight = -18000.0;
 		double sumVolumePos = 0.0;
 		double sumVolumeNeg = 0.0;
 		double temp;
+		int pixelsInThePoly = 0;
+		int skipPixels = 0;
 		
 		for (int j = startPosition.y; j <= endPosition.y; j++) {
 			for (int i = startPosition.x; i <= endPosition.x; i++) {
@@ -141,27 +163,36 @@ public class GeoTiffUtils {
 				
 				if (polygon.contains(geometryFactory.createPoint(
 						new Coordinate(pixelEnvelop.getCenterX(), pixelEnvelop.getCenterY())))) {
+					pixelsInThePoly++;
 					double result = coverage.evaluate(new GridCoordinates2D(i, j), vals)[0];
 					temp = result - repPoint;
-					if (temp > 0) {
+					if (result > maxHeight){
+						maxHeight = result;
+					}
+					if (result < minHeight) {
+						minHeight = result;
+					}
+					
+					if (result < -18000.0) {
+						skipPixels++;
+					} else if (temp > 0) {
 						sumVolumePos += temp;
 					} else {
 						sumVolumeNeg += temp;
 					}
-					//System.out.println("[" + i + "," + j + "]=" + result);
-					popali++;
-				} else {
-					nepopali++;
 				};
 				
 			}
 		}
+		resResponse.setPixelsInThePoly(pixelsInThePoly);
+		resResponse.setBasePlane(repPoint);
+		resResponse.setCutVolume(sumVolumePos * getPixelDim(geometry));
+		resResponse.setFillVolume(sumVolumeNeg * getPixelDim(geometry));
+		resResponse.setSkipedPixels(skipPixels);
+		resResponse.setMaxHeight(maxHeight);
+		resResponse.setMinHeight(minHeight);
+
 		System.out.println("Pixel area:" + getPixelDim(geometry) + " m^2");
-		System.out.println("Positive volume: " + sumVolumePos * getPixelDim(geometry) + " m^3");
-		System.out.println("Negative volume: " + sumVolumeNeg * getPixelDim(geometry) + " m^3");
-		
-		System.out.println("Popali: " + popali);
-		System.out.println("Ne popali: " + nepopali);
 	}
 
 }
