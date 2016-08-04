@@ -1,12 +1,18 @@
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.batik.svggen.font.table.Coverage;
+import org.geotools.coverage.grid.GridCoordinates2D;
 import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.coverage.grid.GridEnvelope2D;
+import org.geotools.coverage.grid.GridGeometry2D;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
+import org.geotools.geometry.DirectPosition2D;
 import org.geotools.geometry.Envelope2D;
 import org.geotools.geometry.jts.JTS;
+import org.geotools.geometry.jts.JTSFactoryFinder;
 import org.geotools.referencing.CRS;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -14,6 +20,8 @@ import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
 
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.Polygon;
 
 public class GeoTiffUtils {
 	private static final String REG_EXP = "([0-9]*\\.[0-9]*),([0-9]*\\.[0-9]*)";
@@ -39,7 +47,8 @@ public class GeoTiffUtils {
 		return coverage.getCoordinateReferenceSystem();
 	}
 	
-	public static Coordinate[] convertCoordinates(GridCoverage2D coverage, Coordinate[] coords) throws TransformException, FactoryException {
+	public static Coordinate[] convertCoordinates(GridCoverage2D coverage, Coordinate[] coords)
+			throws TransformException, FactoryException {
 		CoordinateReferenceSystem sourceCRS = CRS.decode(SOURCE_CRS);
 		CoordinateReferenceSystem targetCRS = getTargetCRS(coverage);
 		MathTransform transform = CRS.findMathTransform(sourceCRS, targetCRS);
@@ -65,9 +74,9 @@ public class GeoTiffUtils {
 		return true;
 	}
 	
-	public static Coordinate[] getExtrimeCorners(Coordinate[] coords) {
-		Coordinate firstCorner = coords[0];
-		Coordinate secondCorner = coords[0];
+	public static Coordinate[] getExtremeCorners(Coordinate[] coords) {
+		Coordinate firstCorner = new Coordinate(coords[0]);
+		Coordinate secondCorner = new Coordinate(coords[0]);
 		for (Coordinate coordinate : coords) {
 			if (coordinate.x < firstCorner.x) {
 				firstCorner.x = coordinate.x;
@@ -83,15 +92,76 @@ public class GeoTiffUtils {
 			}
 		}
 		Coordinate[] res = {firstCorner, secondCorner};
-		System.out.println("Extrime corner is:");
+		System.out.println("Extreme corners are:");
 		System.out.println("First Corner = " + firstCorner.x + " / " + firstCorner.y);
 		System.out.println("Second Corner = " + secondCorner.x + " / " + secondCorner.y);
-		return res;
-		
+		return res;	
 	}
 	
-	public static double getAbsDimOfPixel () {
-		return 0;		
+	public static double getPixelDim(GridGeometry2D geometry) throws TransformException {
+		Envelope2D pixEnv1 = geometry.gridToWorld(new GridEnvelope2D(0, 0, 1, 1));
+		return pixEnv1.height * pixEnv1.width;		
+	}
+	
+	public static void readGeoTiff(Coordinate[] coords, GridCoverage2DReader reader)
+			throws IOException, TransformException, FactoryException {
+		GridCoverage2D coverage = reader.read(null);
+		GridGeometry2D geometry = coverage.getGridGeometry();
+		int numBands = reader.getGridCoverageCount();
+		
+		
+		
+		/*Обрабатываем geoJson, получаем координаты, создаем по координатам полигон*/
+		
+		coords = GeoTiffUtils.convertCoordinates(coverage, coords);
+		Coordinate[] extrimeCorners = GeoTiffUtils.getExtremeCorners(coords);
+		
+		
+		GridCoordinates2D startPosition = geometry.worldToGrid(
+				new DirectPosition2D(extrimeCorners[0].x, extrimeCorners[0].y));
+		GridCoordinates2D endPosition = geometry.worldToGrid(
+				new DirectPosition2D(extrimeCorners[1].x, extrimeCorners[1].y));
+		
+		GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory();
+		Polygon polygon = geometryFactory.createPolygon(coords);
+		
+		double[] vals = new double[numBands];
+		
+		int popali = 0;
+		int nepopali = 0;
+		int repPoint = 127;
+		
+		double sumVolumePos = 0.0;
+		double sumVolumeNeg = 0.0;
+		double temp;
+		
+		for (int j = startPosition.y; j <= endPosition.y; j++) {
+			for (int i = startPosition.x; i <= endPosition.x; i++) {
+				Envelope2D pixelEnvelop = geometry.gridToWorld(new GridEnvelope2D(i, j, 1, 1));
+				
+				if (polygon.contains(geometryFactory.createPoint(
+						new Coordinate(pixelEnvelop.getCenterX(), pixelEnvelop.getCenterY())))) {
+					double result = coverage.evaluate(new GridCoordinates2D(i, j), vals)[0];
+					temp = result - repPoint;
+					if (temp > 0) {
+						sumVolumePos += temp;
+					} else {
+						sumVolumeNeg += temp;
+					}
+					//System.out.println("[" + i + "," + j + "]=" + result);
+					popali++;
+				} else {
+					nepopali++;
+				};
+				
+			}
+		}
+		System.out.println("Pixel area:" + getPixelDim(geometry) + " m^2");
+		System.out.println("Positive volume: " + sumVolumePos * getPixelDim(geometry) + " m^3");
+		System.out.println("Negative volume: " + sumVolumeNeg * getPixelDim(geometry) + " m^3");
+		
+		System.out.println("Popali: " + popali);
+		System.out.println("Ne popali: " + nepopali);
 	}
 
 }

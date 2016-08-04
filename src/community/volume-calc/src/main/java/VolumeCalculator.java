@@ -7,17 +7,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.config.GeoServerDataDirectory;
-import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.gce.geotiff.GeoTiffReader;
-import org.geotools.geometry.jts.JTSFactoryFinder;
 import org.opengis.coverage.grid.GridEnvelope;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.operation.TransformException;
-
 import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.Polygon;
 
 public class VolumeCalculator {
 	
@@ -34,6 +29,9 @@ public class VolumeCalculator {
 
 	public void sendVolume(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException, URISyntaxException, TransformException, FactoryException {
+		
+		long startTime = System.currentTimeMillis();
+		
 		String layerName = request.getParameter("layer");
 		String geoJSON = request.getParameter("geoData");
 		String dataDir = geoServerDataDir.root().getAbsolutePath();
@@ -44,34 +42,15 @@ public class VolumeCalculator {
 		/*Получаем файл, получаем необходимую информацию о GeoTIFF*/		
 		GridCoverage2DReader reader = new GeoTiffReader(getFile(dataDir, pathFromXml));
 		GridEnvelope dimensions = reader.getOriginalGridRange();
-		GridCoverage2D coverage = reader.read(null);
 		
-		/*Обрабатываем geoJson, получаем координаты, создаем по координатам полигон*/
 		Coordinate[] coords = GeoTiffUtils.extractCoordinates(geoJSON);
-		coords = GeoTiffUtils.convertCoordinates(coverage, coords);
-		Coordinate[] extrimeCorners = GeoTiffUtils.getExtrimeCorners(coords);
-		GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory();
-		Polygon polygon = geometryFactory.createPolygon(coords);
-		
-		
 		
 		/*Проверим попадает ли полигон на картинку геоТиффа*/
-		if(GeoTiffUtils.isCoordinatesInTheBorder(coords, coverage)) {
-			response.getWriter().write("Inside poligon");
-		} else {
-			response.getWriter().write("Outside polygon");
+		if(!GeoTiffUtils.isCoordinatesInTheBorder(coords, reader.read(null))) {
+			response.getWriter().write("Inside poligon\n test");
 		}
 		
-		
-		
-		
-		
-		/*Получаем размер пикселя*/
-		
-		
-	
-		
-		/*Получаем размер пикселя - ОКОНЧАНИЕ*/
+		GeoTiffUtils.readGeoTiff(coords, reader);
 		
 		
 		File downloadFile = null;
@@ -83,7 +62,13 @@ public class VolumeCalculator {
 			
 		
 		response.getWriter().write("all work");
+		
+		long stopTime = System.currentTimeMillis();
+		long elapsedTime = stopTime - startTime;
+	    System.out.println("Execution time:" + elapsedTime);
 	}
+
+	
 
 		
 	private File getFile(String geoServerDataDir, String fileFromXml) throws FileNotFoundException {
