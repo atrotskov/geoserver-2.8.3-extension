@@ -58,7 +58,7 @@ public class GeoTiffUtils {
 		for (Coordinate coordinate : coords) {
 			DirectPosition c = new DirectPosition2D(coordinate.x, coordinate.y);
 			double resault = coverage.evaluate(c, vals)[0];
-			if (resault < minValue) {
+			if (resault < minValue && resault > -18000) {
 				minValue = resault;
 			}
 		}
@@ -78,6 +78,20 @@ public class GeoTiffUtils {
 		}
 		System.out.println("End of transformation");
 		return coords;
+	}
+	
+	public static boolean isCoordinatesInTheDataCov(Coordinate[] coords, GridCoverage2DReader reader) throws IOException{
+		GridCoverage2D coverage = reader.read(null);
+		int numBands = reader.getGridCoverageCount();
+		double[] vals = new double[numBands];
+		for (Coordinate coordinate : coords) {
+			DirectPosition dp = new DirectPosition2D(coordinate.x, coordinate.y);
+			double result = coverage.evaluate(dp, vals)[0];
+			if (result < -18000) {
+				return false;
+			}
+		}
+		return true;
 	}
 	
 	public static boolean isCoordinatesInTheBorder(Coordinate[] coords, GridCoverage2D coverage) {
@@ -116,9 +130,17 @@ public class GeoTiffUtils {
 		return res;	
 	}
 	
-	public static double getPixelDim(GridGeometry2D geometry) throws TransformException {
+	public static double getPixelDim(GridGeometry2D geometry, GridCoverage2D coverage) throws TransformException {
 		Envelope2D pixEnv1 = geometry.gridToWorld(new GridEnvelope2D(0, 0, 1, 1));
-		return pixEnv1.height * pixEnv1.width;		
+		
+		/*CoordinateReferenceSystem sourceCRS = getTargetCRS(coverage);
+		CoordinateReferenceSystem targetCRS = CRS.decode("EPSG:3575");
+		MathTransform transform = CRS.findMathTransform(sourceCRS, targetCRS);
+		Geometry geo = JTS.transform(pixEnv1, transform);*/
+		
+		System.out.println("Pixel H/W: " + (pixEnv1.height/1.5571437155080774) + " / " + (pixEnv1.width/1.5571437155080774));
+		return pixEnv1.height * pixEnv1.width/Math.pow(1.5571437155080774, 2);
+		
 	}
 	
 	public static void readGeoTiff(Coordinate[] coords, GridCoverage2DReader reader, ResaultResponse resResponse)
@@ -140,13 +162,17 @@ public class GeoTiffUtils {
 				new DirectPosition2D(extrimeCorners[1].x, extrimeCorners[1].y));
 		
 		GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory();
-		Polygon polygon = geometryFactory.createPolygon(coords);		
+		Polygon polygon = geometryFactory.createPolygon(coords);
 		
+		CoordinateReferenceSystem sourceCRS = getTargetCRS(coverage);
+		CoordinateReferenceSystem targetCRS = CRS.decode("EPSG:3575");
+		MathTransform transform = CRS.findMathTransform(sourceCRS, targetCRS);
+		Geometry geo = JTS.transform(polygon, transform);
 		
-				
+		System.out.println("Needed CONST = " + (polygon.getLength()/geo.getLength()));
 		
-		resResponse.setArea(polygon.getArea());
-		resResponse.setPerimeter(polygon.getLength());
+		resResponse.setArea(geo.getArea());
+		resResponse.setPerimeter(geo.getLength());
 
 		double repPoint = getBasePlaneValue(coords, reader);
 		double minHeight = 20000.0;
@@ -169,30 +195,33 @@ public class GeoTiffUtils {
 					if (result > maxHeight){
 						maxHeight = result;
 					}
-					if (result < minHeight) {
-						minHeight = result;
-					}
+					
 					
 					if (result < -18000.0) {
 						skipPixels++;
-					} else if (temp > 0) {
-						sumVolumePos += temp;
+						
 					} else {
-						sumVolumeNeg += temp;
+						if (result < minHeight) {
+							minHeight = result;
+						}
+						if (temp > 0) {
+							sumVolumePos += temp;
+						} else {
+							sumVolumeNeg += temp;
+						}
 					}
 				};
-				
 			}
 		}
 		resResponse.setPixelsInThePoly(pixelsInThePoly);
 		resResponse.setBasePlane(repPoint);
-		resResponse.setCutVolume(sumVolumePos * getPixelDim(geometry));
-		resResponse.setFillVolume(sumVolumeNeg * getPixelDim(geometry));
+		resResponse.setCutVolume(sumVolumePos * getPixelDim(geometry, coverage));
+		resResponse.setFillVolume(sumVolumeNeg * getPixelDim(geometry, coverage));
 		resResponse.setSkipedPixels(skipPixels);
 		resResponse.setMaxHeight(maxHeight);
 		resResponse.setMinHeight(minHeight);
 
-		System.out.println("Pixel area:" + getPixelDim(geometry) + " m^2");
+		System.out.println("Pixel area:" + getPixelDim(geometry, coverage) + " m^2");
 	}
 
 }
