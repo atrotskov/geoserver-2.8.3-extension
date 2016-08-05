@@ -169,7 +169,7 @@
             	layer:   "${layerName}",
             	geoData: polygonData
             }).done(function(data){
-            	alert("Response is: " + data)
+            	$('map').append('<p>This is the text in new element.<p>');
             });            
             /*alert(polygonData);*/
  

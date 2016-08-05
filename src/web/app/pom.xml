@@ -209,6 +209,13 @@
 		<artifactId>volume-calc</artifactId>
 		<version>1.0</version>
 	</dependency>
+
+	<dependency>
+		<groupId>org.geoserver</groupId>
+		<artifactId>measurement-tools</artifactId>
+		<version>1.0</version>
+	</dependency>
+
   </dependencies>
   <build>
     <plugins>
@@ -1396,6 +1403,17 @@
         <dependency>
           <groupId>org.geoserver</groupId>
 		  <artifactId>volume-calc</artifactId>
+		  <version>1.0</version>
+        </dependency>              
+      </dependencies>      
+   </profile>
+
+   <profile>
+      <id>measurement-tools</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver</groupId>
+		  <artifactId>measurement-tools</artifactId>
 		  <version>1.0</version>
         </dependency>              
       </dependencies>      

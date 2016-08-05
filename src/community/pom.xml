@@ -486,6 +486,13 @@
         <module>volume-calc</module>
       </modules>
     </profile>
+
+    <profile>
+      <id>measurement-tools</id>
+      <modules>
+        <module>measurement-tools</module>
+      </modules>
+    </profile>
 	
   </profiles>
 
