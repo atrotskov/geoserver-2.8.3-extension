@@ -21,6 +21,19 @@
             height: 100%;
             width: 100%;
         }
+        
+        .info {
+    padding: 6px 8px;
+    font: 14px/16px Arial, Helvetica, sans-serif;
+    background: white;
+    background: rgba(255,255,255,0.8);
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    border-radius: 5px;
+}
+.info h4 {
+    margin: 0 0 5px;
+    color: #777;
+}
     </style>
 
     <div id="map"></div>
@@ -120,8 +133,34 @@
 		
 		var featureGroup = new L.featureGroup();
         map.addLayer(featureGroup);
+        
+        
+        
+        
+        
+        
 		
-		
+		var info = L.control();
+
+info.onAdd = function (map) {
+    this._div = L.DomUtil.create('div', 'info'); // create a div with a class "info"
+    this.update();
+    return this._div;
+};
+
+// method that we will use to update the control based on feature properties passed
+info.update = function (props) {
+    this._div.innerHTML = '<h4>Resaults:</h4>' + (props ? props : 'Please draw polygon for the start of measurement');
+};
+
+info.addTo(map);
+
+
+
+
+
+
+
 		// add draw polygon control
 		var drawControl = new L.Control.Draw({
 			position: 'topright',
@@ -174,6 +213,8 @@
             /*alert(polygonData);*/
  
         });
+        
+
         
                 
         L.easyButton('<span class="send-btn">&curren;</span>', function(){

@@ -97,21 +97,21 @@ public class ResaultResponse {
 		if (exeptionMessage != null) {
 			return "Warning: " + exeptionMessage;
 		}
-		return "Resaults:</br>" +
-				"Cut: " + cutVolume + "m&#179;</br>" +
-				"Fill: " + fillVolume + "m&#179;</br>" +
-				"Volume: " + (cutVolume + Math.abs(fillVolume)) + "m&#179;</br>" +
-				"Perimeter: " + perimeter + "m</br>" +
-				"Area: " + area + "m&#178;</br>" +
-				"Maximum Height: " + maxHeight + "m</br>" +
-				"Minimum Height: " + minHeight + "m</br>" +
-				"Base Plane: " + basePlane + "m (lowest point)</br>" +
-				"Full width: " + envelopeWidth + "m</br>" +
-				"Full Height: " + envelopeHeight + "m</br>" +
+		return 	"Cut: " + String.format("%.1f", cutVolume) + "m&#179;</br>" +
+				"Fill: " + String.format("%.1f", Math.abs(fillVolume)) + "m&#179;</br>" +
+				"Volume: " + String.format("%.1f", (cutVolume + Math.abs(fillVolume))) + "m&#179;</br>" +
+				"Perimeter: " + String.format("%.1f", perimeter) + "m</br>" +
+				"Area: " + String.format("%.1f", area) + "m&#178;</br>" +
+				"Maximum Height: " + String.format("%.1f", maxHeight) + "m</br>" +
+				"Minimum Height: " + String.format("%.1f", minHeight) + "m</br>" +
+				"Base Plane: " + String.format("%.1f", basePlane) + "m (lowest point)</br>" +
+				//"Full width: " + envelopeWidth + "m</br>" +
+				//"Full Height: " + envelopeHeight + "m</br>" +
 				"The number of pixels in the polygon: " + pixelsInThePoly + "</br>" +
 				"Skiped pixels: " + skipedPixels + "</br>" +
-				"Query execution time: " + queryExecTime + "msec</br>" +
-				"Message=" + message;
+				"Query execution time: " + queryExecTime + "msec</br>"
+				//+ "Message=" + message
+				;
 	}
 
 	public String getMessage() {

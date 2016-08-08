@@ -48,26 +48,21 @@ public class VolumeCalculator {
 		Coordinate[] coords = GeoTiffUtils.extractCoordinates(geoJSON);
 		
 		/*Проверим попадает ли полигон на картинку геоТиффа*/
-		if(!GeoTiffUtils.isCoordinatesInTheBorder(coords, reader.read(null))) {
-			response.getWriter().write("Inside poligon\n test");
+		if(GeoTiffUtils.isCoordinatesInTheBorder(coords, reader.read(null))) {
+			response.getWriter().write("first IF");
 		}
 		
 		GeoTiffUtils.readGeoTiff(coords, reader, resResponse);
 		
 		
-		File downloadFile = null;
-		try {
-			downloadFile = getFile(dataDir, pathFromXml);
-		} catch (FileNotFoundException e) {
-			response.getWriter().write(TEXT_RESPONSE_FILE_NOT_FOUND + e);
-		}
+		
 		
 		long stopTime = System.currentTimeMillis();
 		long elapsedTime = stopTime - startTime;
 		
 	    resResponse.setQueryExecTime(elapsedTime);
 		
-		response.getWriter().write(resResponse.toString());
+		response.getWriter().write(resResponse.getFullResault());
 		
 		
 	    
