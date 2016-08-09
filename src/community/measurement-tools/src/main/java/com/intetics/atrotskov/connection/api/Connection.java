@@ -1,5 +1,9 @@
 package com.intetics.atrotskov.connection.api;
 
-public interface Connection<T> {	
-	T getConnection();
+import java.io.FileNotFoundException;
+
+import org.geotools.data.DataSourceException;
+
+public interface Connection<T>  {	
+	T getConnection(String layerName) throws DataSourceException, FileNotFoundException;
 }
