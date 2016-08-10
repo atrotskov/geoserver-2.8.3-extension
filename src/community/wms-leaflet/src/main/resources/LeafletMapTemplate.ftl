@@ -206,10 +206,8 @@ info.addTo(map);
             	service: "volumeCalculatorService",
             	version: "1.0.0",
             	layer:   "${layerName}",
-            	geoData: polygonData
-            }).done(function(data){
-            	$('map').appendTo('<div>This is the text in new element.</div>');
-            });            
+            	geoData: polygonData                   
+            }).done(function(data){info.update(data)});            
             /*alert(polygonData);*/
  
         });

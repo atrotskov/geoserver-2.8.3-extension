@@ -2,9 +2,12 @@ package com.intetics.atrotskov.connection.impl;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.config.GeoServerDataDirectory;
+import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.data.DataSourceException;
 import org.geotools.gce.geotiff.GeoTiffReader;
@@ -15,33 +18,55 @@ public class ConnectionGeoTiffImpl implements Connection<GridCoverage2DReader> {
 	
 	private Catalog catalog;
 	private GeoServerDataDirectory geoServerDataDir;
+	private String layerName;
+	private GridCoverage2DReader reader;
+	private GridCoverage2D coverage;
+	private GridGeometry2D geometry;
+	private int numBands;
+	private double[] vals;
 		
-	public Catalog getCatalog() {
-		return catalog;
-	}
-
-	public void setCatalog(Catalog catalog) {
-		this.catalog = catalog;
-	}
-
-	public GeoServerDataDirectory getGeoServerDataDir() {
-		return geoServerDataDir;
-	}
-
-	public void setGeoServerDataDir(GeoServerDataDirectory geoServerDataDir) {
-		this.geoServerDataDir = geoServerDataDir;
+	@Override
+	public void initConnection(String layerName)
+			throws DataSourceException, FileNotFoundException, IOException {
+		
+		if (this.layerName != null &&
+				!(this.layerName.equals(layerName))) {
+			this.layerName = layerName;
+			String dataDir = geoServerDataDir.root().getAbsolutePath();
+			String coverageId = catalog.getLayerByName(layerName).getResource().getId();
+			String coverageStoreId = catalog.getCoverage(coverageId).getStore().getId();
+			String pathFromXml = catalog.getCoverageStore(coverageStoreId).getURL();
+			this.reader = new GeoTiffReader(getFile(dataDir, pathFromXml));
+			this.coverage = reader.read(null);
+			this.geometry = coverage.getGridGeometry();
+			this.numBands = reader.getGridCoverageCount();
+			this.vals = new double[numBands];
+		}
 	}
 	
 	@Override
-	public GridCoverage2DReader getConnection(String layerName) throws DataSourceException, FileNotFoundException {
-		
-		String dataDir = geoServerDataDir.root().getAbsolutePath();
-		String coverageId = catalog.getLayerByName(layerName).getResource().getId();
-		String coverageStoreId = catalog.getCoverage(coverageId).getStore().getId();
-		String pathFromXml = catalog.getCoverageStore(coverageStoreId).getURL();
-		
-		GridCoverage2DReader reader = new GeoTiffReader(getFile(dataDir, pathFromXml));
-		return reader;
+	public GridCoverage2DReader getConnection() {
+		return this.reader;
+	}
+	
+	@Override
+	public GridCoverage2D getCoverage() {
+		return this.coverage;
+	}
+
+	@Override
+	public GridGeometry2D getGeometry() {
+		return this.geometry;
+	}
+
+	@Override
+	public int getNumBands() {
+		return this.numBands;
+	}
+
+	@Override
+	public double[] getVals() {
+		return this.vals;
 	}
 	
 	private File getFile(String geoServerDataDir, String fileFromXml) throws FileNotFoundException {
@@ -70,5 +95,9 @@ public class ConnectionGeoTiffImpl implements Connection<GridCoverage2DReader> {
 		}
 		return file;
 	}
+
+	
+
+	
 
 }
