@@ -2,13 +2,16 @@ package com.intetics.atrotskov.dao.api;
 
 import java.util.List;
 
+import org.geotools.coverage.grid.InvalidGridGeometryException;
+import org.opengis.referencing.operation.TransformException;
+
 import com.intetics.atrotskov.model.CloudEntity;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Polygon;
 
 public interface PolygonDao {
 	
-	List<CloudEntity> getValuesByCoord(Coordinate[] coords);
-	List<CloudEntity> getValuesByPolygon(Polygon polygon);
+	List<CloudEntity> getValuesByCoord(Coordinate[] coords) throws InvalidGridGeometryException, TransformException;
+	List<CloudEntity> getValuesByPolygon(Polygon polygon) throws InvalidGridGeometryException, TransformException;
 
 }
