@@ -2,15 +2,19 @@ package com.intetics.atrotskov.service.impl;
 
 import java.util.List;
 
-import com.intetics.atrotskov.dao.Impl.PolygonDaoImpl;
 import com.intetics.atrotskov.dao.api.PolygonDao;
+import com.intetics.atrotskov.dao.impl.PolygonDaoImpl;
 import com.intetics.atrotskov.model.CloudEntity;
 import com.intetics.atrotskov.model.Volume;
 import com.intetics.atrotskov.service.api.ServiceMeasTools;;
 
 public class ServiceGeoTiffImpl implements ServiceMeasTools {
 	
-	PolygonDao polyDao = new PolygonDaoImpl();
+	private PolygonDao polygonDao;
+	
+	public ServiceGeoTiffImpl(PolygonDao polygonDao) {
+		this.polygonDao = polygonDao;
+	}
 	
 	
 	@Override

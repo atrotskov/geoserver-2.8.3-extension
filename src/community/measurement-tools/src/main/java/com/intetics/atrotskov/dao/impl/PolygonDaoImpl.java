@@ -1,4 +1,4 @@
-package com.intetics.atrotskov.dao.Impl;
+package com.intetics.atrotskov.dao.impl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,43 +23,56 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Polygon;
 
 public class PolygonDaoImpl implements PolygonDao {
+
+	private Connection<GridCoverage2DReader> conn;
+
+	public PolygonDaoImpl(Connection<GridCoverage2DReader> conn) {
+		this.conn = conn;
+	}
+
+	private GridCoverage2D coverage;
+	private GridGeometry2D geometry;
 	
-	private Connection<GridCoverage2DReader> conn = new ConnectionGeoTiffImpl();
-	private GridCoverage2D coverage = conn.getCoverage();
-	private GridGeometry2D geometry = conn.getGeometry();
+	private void setFields(){
+		this.coverage = conn.getCoverage();
+		this.geometry = conn.getGeometry();
+	}
 
 	@Override
-	public List<CloudEntity> getValuesByCoord(Coordinate[] coords) throws InvalidGridGeometryException, TransformException {
+	public List<CloudEntity> getValuesByCoord(Coordinate[] coords)
+			throws InvalidGridGeometryException, TransformException {
 		Coordinate[] extrimeCorners = getExtremeCorners(coords);
-		GridCoordinates2D startPosition = geometry.worldToGrid(
-				new DirectPosition2D(extrimeCorners[0].x, extrimeCorners[0].y));
-		GridCoordinates2D endPosition = geometry.worldToGrid(
-				new DirectPosition2D(extrimeCorners[1].x, extrimeCorners[1].y));
+		GridCoordinates2D startPosition = geometry
+				.worldToGrid(new DirectPosition2D(extrimeCorners[0].x, extrimeCorners[0].y));
+		GridCoordinates2D endPosition = geometry
+				.worldToGrid(new DirectPosition2D(extrimeCorners[1].x, extrimeCorners[1].y));
 		GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory();
 		Polygon polygon = geometryFactory.createPolygon(coords);
-		
+
 		List<CloudEntity> listOfResults = new ArrayList<>();
-		
+
 		for (int j = startPosition.y; j <= endPosition.y; j++) {
 			for (int i = startPosition.x; i <= endPosition.x; i++) {
 				Envelope2D pixelEnvelop = geometry.gridToWorld(new GridEnvelope2D(i, j, 1, 1));
 				Coordinate point = new Coordinate(pixelEnvelop.getCenterX(), pixelEnvelop.getCenterY());
-				
+
 				if (polygon.contains(geometryFactory.createPoint(point))) {
 					double value = coverage.evaluate(new GridCoordinates2D(i, j), conn.getVals())[0];
 					CloudEntity ce = new CloudEntity(value, point, new GridCoordinates2D(i, j));
 					listOfResults.add(ce);
-				};
+				}
+				;
 			}
 		}
 		return listOfResults;
 	}
 
 	@Override
-	public List<CloudEntity> getValuesByPolygon(Polygon polygon) throws InvalidGridGeometryException, TransformException {
+	public List<CloudEntity> getValuesByPolygon(Polygon polygon)
+			throws InvalidGridGeometryException, TransformException {
 		return getValuesByCoord(polygon.getCoordinates());
 	}
-	
+
 	private Coordinate[] getExtremeCorners(Coordinate[] coords) {
 		Coordinate firstCorner = new Coordinate(coords[0]);
 		Coordinate secondCorner = new Coordinate(coords[0]);
@@ -68,7 +81,7 @@ public class PolygonDaoImpl implements PolygonDao {
 				firstCorner.x = coordinate.x;
 			}
 			if (coordinate.y > firstCorner.y) {
-				firstCorner.y = coordinate.y;			
+				firstCorner.y = coordinate.y;
 			}
 			if (coordinate.x > secondCorner.x) {
 				secondCorner.x = coordinate.x;
@@ -77,7 +90,7 @@ public class PolygonDaoImpl implements PolygonDao {
 				secondCorner.y = coordinate.y;
 			}
 		}
-		Coordinate[] res = {firstCorner, secondCorner};
+		Coordinate[] res = { firstCorner, secondCorner };
 		System.out.println("Extreme corners are:");
 		System.out.println("First Corner = " + firstCorner.x + " / " + firstCorner.y);
 		System.out.println("Second Corner = " + secondCorner.x + " / " + secondCorner.y);

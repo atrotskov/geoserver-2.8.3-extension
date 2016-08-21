@@ -18,7 +18,5 @@ public interface ServiceMeasTools {
 	
 	/* Methods for point data*/
 	double getHeght();
-	
-	
 
 }

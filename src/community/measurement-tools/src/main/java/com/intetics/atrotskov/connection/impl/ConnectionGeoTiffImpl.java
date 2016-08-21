@@ -24,6 +24,11 @@ public class ConnectionGeoTiffImpl implements Connection<GridCoverage2DReader> {
 	private GridGeometry2D geometry;
 	private int numBands;
 	private double[] vals;
+	
+	public ConnectionGeoTiffImpl(Catalog catalog, GeoServerDataDirectory geoServerDataDir) {
+		this.catalog = catalog;
+		this.geoServerDataDir = geoServerDataDir;
+	}
 		
 	@Override
 	public void initConnection(String layerName)
