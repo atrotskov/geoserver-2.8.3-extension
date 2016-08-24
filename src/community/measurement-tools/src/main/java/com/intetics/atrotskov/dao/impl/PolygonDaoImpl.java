@@ -41,6 +41,7 @@ public class PolygonDaoImpl implements PolygonDao {
 	@Override
 	public List<CloudEntity> getValuesByCoord(Coordinate[] coords)
 			throws InvalidGridGeometryException, TransformException {
+		setFields();
 		Coordinate[] extrimeCorners = getExtremeCorners(coords);
 		GridCoordinates2D startPosition = geometry
 				.worldToGrid(new DirectPosition2D(extrimeCorners[0].x, extrimeCorners[0].y));

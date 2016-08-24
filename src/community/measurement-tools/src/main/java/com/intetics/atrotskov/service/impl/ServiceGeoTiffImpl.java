@@ -2,23 +2,34 @@ package com.intetics.atrotskov.service.impl;
 
 import java.util.List;
 
+import org.geotools.coverage.grid.InvalidGridGeometryException;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.NoSuchAuthorityCodeException;
+import org.opengis.referencing.operation.TransformException;
+
 import com.intetics.atrotskov.dao.api.PolygonDao;
-import com.intetics.atrotskov.dao.impl.PolygonDaoImpl;
 import com.intetics.atrotskov.model.CloudEntity;
 import com.intetics.atrotskov.model.Volume;
-import com.intetics.atrotskov.service.api.ServiceMeasTools;;
+import com.intetics.atrotskov.service.api.ServiceMeasTools;
+import com.intetics.atrotskov.transformator.api.Transformator;
+import com.vividsolutions.jts.geom.Coordinate;;
 
 public class ServiceGeoTiffImpl implements ServiceMeasTools {
 	
 	private PolygonDao polygonDao;
+	private Transformator trans;
 	
-	public ServiceGeoTiffImpl(PolygonDao polygonDao) {
+	public ServiceGeoTiffImpl(PolygonDao polygonDao, Transformator trans) {
 		this.polygonDao = polygonDao;
+		this.trans = trans;
 	}
 	
 	
 	@Override
-	public Volume getVolume(List<CloudEntity> results, double basePlane) {
+	public Volume getVolume(Coordinate[] coords, double basePlane)
+			throws InvalidGridGeometryException, TransformException, NoSuchAuthorityCodeException, FactoryException {
+		coords = trans.transformAllFrom(coords);
+		List<CloudEntity> results = polygonDao.getValuesByCoord(coords);
 		Volume volume = new Volume();
 		for (CloudEntity cloudEntity : results) {
 			if (cloudEntity.getValue() > basePlane) {

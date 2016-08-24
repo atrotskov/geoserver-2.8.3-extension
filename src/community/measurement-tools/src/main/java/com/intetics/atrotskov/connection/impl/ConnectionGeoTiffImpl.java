@@ -34,7 +34,7 @@ public class ConnectionGeoTiffImpl implements Connection<GridCoverage2DReader> {
 	public void initConnection(String layerName)
 			throws DataSourceException, FileNotFoundException, IOException {
 		
-		if (this.layerName != null &&
+		if (this.layerName == null ||
 				!(this.layerName.equals(layerName))) {
 			this.layerName = layerName;
 			String dataDir = geoServerDataDir.root().getAbsolutePath();
