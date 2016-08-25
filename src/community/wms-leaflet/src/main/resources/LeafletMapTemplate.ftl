@@ -200,7 +200,8 @@
             service: "measurementToolsService",
             version: "1.0.0",
             layer: "${layerName}",
-            geoData: geoData
+            geoData: geoData,
+            basePlane: "129"
         }).done(function (data) {
             info.update(data)
         });

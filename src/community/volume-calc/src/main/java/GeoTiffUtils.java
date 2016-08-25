@@ -13,6 +13,7 @@ import org.geotools.geometry.Envelope2D;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.JTSFactoryFinder;
 import org.geotools.referencing.CRS;
+import org.opengis.coverage.PointOutsideCoverageException;
 import org.opengis.geometry.DirectPosition;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -100,7 +101,7 @@ public class GeoTiffUtils {
 		System.out.println("Envelope - " + crs.getName());
 		for (Coordinate coordinate : coords) {
 			if (!envelope.contains(coordinate.x, coordinate.y)) {
-				return false;
+				throw new PointOutsideCoverageException("Please, draw polygon under current layer");
 			}
 		}
 		return true;
