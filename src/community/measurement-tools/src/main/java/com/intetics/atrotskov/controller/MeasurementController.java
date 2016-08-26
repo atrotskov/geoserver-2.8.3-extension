@@ -51,6 +51,7 @@ public class MeasurementController {
 		System.out.println(volume);
 		
 		ObjectMapper mapper = new ObjectMapper();
+		mapper.writeValue(response.getOutputStream(), volume);
 		
 	}
 	
