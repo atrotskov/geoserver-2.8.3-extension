@@ -18,6 +18,7 @@ import org.opengis.referencing.operation.TransformException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.intetics.atrotskov.connection.api.Connection;
 import com.intetics.atrotskov.model.Volume;
+import com.intetics.atrotskov.model.dto.MeasurmentToolsResp;
 import com.intetics.atrotskov.service.api.ServiceMeasTools;
 
 public class MeasurementController {
@@ -50,8 +51,12 @@ public class MeasurementController {
 		//String temp2 = "";
 		System.out.println(volume);
 		
+		MeasurmentToolsResp mtresp = new MeasurmentToolsResp();
+		//mtresp.setMessage("Hello message");
+		mtresp.setVolume(volume);
+		
 		ObjectMapper mapper = new ObjectMapper();
-		mapper.writeValue(response.getOutputStream(), volume);
+		mapper.writeValue(response.getOutputStream(), mtresp);
 		
 	}
 	

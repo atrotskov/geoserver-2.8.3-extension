@@ -2,7 +2,7 @@ package com.intetics.atrotskov.model.dto;
 
 import com.intetics.atrotskov.model.Volume;
 
-public class Response {
+public class MeasurmentToolsResp {
 	private String message;
 	private Volume volume;
 	private double minHeight;
