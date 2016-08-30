@@ -16,14 +16,10 @@ public interface ServiceMeasTools {
 	/* Methods for volume data */
 	Volume getVolume(Coordinate[] coords, double basePlane)
 			throws InvalidGridGeometryException, TransformException, NoSuchAuthorityCodeException, FactoryException;
-	double getMinValue(List<CloudEntity> results);
-	double getMaxValue(List<CloudEntity> results);
 	double getNumberOfPixels(List<CloudEntity> results);
+	double getMin(Coordinate[] coords)
+			throws NoSuchAuthorityCodeException, FactoryException, TransformException;
+	double getMax(Coordinate[] coords)
+			throws NoSuchAuthorityCodeException, FactoryException, TransformException;
 	
-	/* Methods for linear data*/	
-	List<CloudEntity> getCut(List<CloudEntity> results);
-	
-	/* Methods for point data*/
-	double getHeght();
-
 }

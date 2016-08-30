@@ -1,5 +1,7 @@
 package com.intetics.atrotskov.dao.impl;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,7 +17,6 @@ import org.geotools.geometry.jts.JTSFactoryFinder;
 import org.opengis.referencing.operation.TransformException;
 
 import com.intetics.atrotskov.connection.api.Connection;
-import com.intetics.atrotskov.connection.impl.ConnectionGeoTiffImpl;
 import com.intetics.atrotskov.dao.api.PolygonDao;
 import com.intetics.atrotskov.model.CloudEntity;
 import com.vividsolutions.jts.geom.Coordinate;
@@ -58,11 +59,12 @@ public class PolygonDaoImpl implements PolygonDao {
 				Coordinate point = new Coordinate(pixelEnvelop.getCenterX(), pixelEnvelop.getCenterY());
 
 				if (polygon.contains(geometryFactory.createPoint(point))) {
-					double value = coverage.evaluate(new GridCoordinates2D(i, j), conn.getVals())[0];
+					double tempValue = coverage.evaluate(new GridCoordinates2D(i, j), conn.getVals())[0];
+					// we rounded the value (3 digits after the decimal point)
+					double value = new BigDecimal(tempValue).setScale(3, RoundingMode.HALF_UP).doubleValue();
 					CloudEntity ce = new CloudEntity(value, point, new GridCoordinates2D(i, j));
 					listOfResults.add(ce);
-				}
-				;
+				};
 			}
 		}
 		return listOfResults;

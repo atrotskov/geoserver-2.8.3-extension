@@ -1,6 +1,7 @@
 package com.intetics.atrotskov.service.impl;
 
 import java.util.List;
+import java.util.TreeMap;
 
 import org.geotools.coverage.grid.InvalidGridGeometryException;
 import org.opengis.referencing.FactoryException;
@@ -24,7 +25,6 @@ public class ServiceGeoTiffImpl implements ServiceMeasTools {
 		this.trans = trans;
 	}
 	
-	
 	@Override
 	public Volume getVolume(Coordinate[] coords, double basePlane)
 			throws InvalidGridGeometryException, TransformException, NoSuchAuthorityCodeException, FactoryException {
@@ -42,15 +42,15 @@ public class ServiceGeoTiffImpl implements ServiceMeasTools {
 	}
 
 	@Override
-	public double getMinValue(List<CloudEntity> results) {
-		// TODO Auto-generated method stub
-		return 0;
+	public double getMin(Coordinate[] coords)
+			throws NoSuchAuthorityCodeException, FactoryException, TransformException {
+		return getStatistics(coords).firstKey();
 	}
-
+	
 	@Override
-	public double getMaxValue(List<CloudEntity> results) {
-		// TODO Auto-generated method stub
-		return 0;
+	public double getMax(Coordinate[] coords)
+			throws NoSuchAuthorityCodeException, FactoryException, TransformException {
+		return getStatistics(coords).lastKey();
 	}
 
 	@Override
@@ -58,17 +58,15 @@ public class ServiceGeoTiffImpl implements ServiceMeasTools {
 		// TODO Auto-generated method stub
 		return 0;
 	}
-
-	@Override
-	public List<CloudEntity> getCut(List<CloudEntity> results) {
-		// TODO Auto-generated method stub
-		return null;
+	
+	private TreeMap<Double, CloudEntity> getStatistics(Coordinate[] coords)
+			throws NoSuchAuthorityCodeException, FactoryException, TransformException{
+		coords = trans.transformAllFrom(coords);
+		List<CloudEntity> results = polygonDao.getValuesByCoord(coords);
+		TreeMap<Double, CloudEntity> sortedCloud = new TreeMap<>();
+		for (CloudEntity cloudEntity : results) {
+			sortedCloud.put(cloudEntity.getValue(), cloudEntity);
+		}
+		return sortedCloud;
 	}
-
-	@Override
-	public double getHeght() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
 }

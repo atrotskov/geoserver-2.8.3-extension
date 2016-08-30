@@ -10,6 +10,8 @@ public class MeasurmentToolsResp {
 	private int pixelCount;
 	private int pixelSkipped;
 	
+	//private 
+	
 	public String getMessage() {
 		return message;
 	}
