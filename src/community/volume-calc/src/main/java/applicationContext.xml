@@ -3,39 +3,20 @@
 
 <beans>
 
-	<bean id="geoTiffConnection" class="com.intetics.atrotskov.connection.impl.ConnectionGeoTiffImpl">
+	<bean id="volumeCalculator" class="VolumeCalculator">
 		<constructor-arg index="0" ref="catalog" />
 		<constructor-arg index="1" ref="dataDirectory" />
 	</bean>
 
-	<bean id="measurementController" class="com.intetics.atrotskov.controller.MeasurementController">
-		<constructor-arg index="0" ref="geoTiffConnection" />
-		<constructor-arg index="1" ref="serviceMTools" />
-	</bean>
-	
-	<bean id="polygonDao" class="com.intetics.atrotskov.dao.impl.PolygonDaoImpl">
-		<constructor-arg index="0" ref="geoTiffConnection" />
-	</bean>
-	
-	<bean id="transformator" class="com.intetics.atrotskov.transformator.impl.TransformatorImpl">
-		<constructor-arg index="0" ref="geoTiffConnection" />
-	</bean>
-	
-	<bean id="serviceMTools" class="com.intetics.atrotskov.service.impl.ServiceGeoTiffImpl">
-		<constructor-arg index="0" ref="polygonDao" />
-		<constructor-arg index="1" ref="transformator" />
-	</bean>
-
-	<bean id="measurementControllerImpl" class="org.geoserver.platform.Service">
-		<constructor-arg index="0" value="measurementToolsService" />
-		<constructor-arg index="1" ref="measurementController" />
+	<bean id="volumeCalculatorImpl" class="org.geoserver.platform.Service">
+		<constructor-arg index="0" value="volumeCalculatorService" />
+		<constructor-arg index="1" ref="volumeCalculator" />
 		<constructor-arg index="2" value="1.0.0" />
 		<constructor-arg index="3">
 			<list>
-				<value>getPolygonData</value>
-				<value>getPointData</value>
+				<value>sendVolume</value>
 			</list>
 		</constructor-arg>
 	</bean>
-		
+
 </beans>

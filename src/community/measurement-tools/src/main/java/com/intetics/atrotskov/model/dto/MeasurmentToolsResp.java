@@ -9,6 +9,7 @@ public class MeasurmentToolsResp {
 	private double maxHeight;
 	private int pixelCount;
 	private int pixelSkipped;
+	private double basePlane;
 	
 	//private 
 	
@@ -47,6 +48,12 @@ public class MeasurmentToolsResp {
 	}
 	public void setPixelSkipped(int pixelSkipped) {
 		this.pixelSkipped = pixelSkipped;
+	}
+	public double getBasePlane() {
+		return basePlane;
+	}
+	public void setBasePlane(double basePlane) {
+		this.basePlane = basePlane;
 	}
 	
 	

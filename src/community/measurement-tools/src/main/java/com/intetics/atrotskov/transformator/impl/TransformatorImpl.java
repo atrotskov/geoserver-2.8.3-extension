@@ -22,20 +22,23 @@ public class TransformatorImpl implements Transformator {
 	}
 
 	@Override
-	public Coordinate transformFrom(Coordinate coord) throws NoSuchAuthorityCodeException, FactoryException, TransformException {
+	public Coordinate transformFrom(Coordinate coord)
+			throws NoSuchAuthorityCodeException, FactoryException, TransformException {
 		CoordinateReferenceSystem sourceCRS = CRS.decode(SOURCE_CRS);
 		CoordinateReferenceSystem targetCRS = conn.getCoverage().getCoordinateReferenceSystem();
 		MathTransform transform = CRS.findMathTransform(sourceCRS, targetCRS);
-		JTS.transform(coord, coord, transform);
-		return coord;
+		Coordinate targetCoordinate = JTS.transform(coord, null, transform);
+		return targetCoordinate;
 	}
 
 	@Override
-	public Coordinate[] transformAllFrom(Coordinate[] coords) throws NoSuchAuthorityCodeException, FactoryException, TransformException {
+	public Coordinate[] transformAllFrom(Coordinate[] coords)
+			throws NoSuchAuthorityCodeException, FactoryException, TransformException {
+		Coordinate[] targetCoordinates = new Coordinate[coords.length];
 		for (int i = 0; i < coords.length; i++) {
-			transformFrom(coords[i]);
+			targetCoordinates[i] = transformFrom(coords[i]);
 		}
-		return coords;
+		return targetCoordinates;
 	}
 
 }

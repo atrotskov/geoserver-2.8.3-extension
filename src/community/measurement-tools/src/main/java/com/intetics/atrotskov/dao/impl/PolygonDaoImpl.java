@@ -42,6 +42,9 @@ public class PolygonDaoImpl implements PolygonDao {
 	@Override
 	public List<CloudEntity> getValuesByCoord(Coordinate[] coords)
 			throws InvalidGridGeometryException, TransformException {
+		
+		long startTime = System.currentTimeMillis();
+		
 		setFields();
 		Coordinate[] extrimeCorners = getExtremeCorners(coords);
 		GridCoordinates2D startPosition = geometry
@@ -67,6 +70,8 @@ public class PolygonDaoImpl implements PolygonDao {
 				};
 			}
 		}
+		long duration = System.currentTimeMillis() - startTime;
+		System.out.println("Read GeoTiff duration: " + duration);
 		return listOfResults;
 	}
 
@@ -94,9 +99,6 @@ public class PolygonDaoImpl implements PolygonDao {
 			}
 		}
 		Coordinate[] res = { firstCorner, secondCorner };
-		System.out.println("Extreme corners are:");
-		System.out.println("First Corner = " + firstCorner.x + " / " + firstCorner.y);
-		System.out.println("Second Corner = " + secondCorner.x + " / " + secondCorner.y);
 		return res;
 	}
 }

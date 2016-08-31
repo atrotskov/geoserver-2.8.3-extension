@@ -20,6 +20,7 @@ import com.intetics.atrotskov.connection.api.Connection;
 import com.intetics.atrotskov.model.Volume;
 import com.intetics.atrotskov.model.dto.MeasurmentToolsResp;
 import com.intetics.atrotskov.service.api.ServiceMeasTools;
+import com.vividsolutions.jts.geom.Coordinate;
 
 public class MeasurementController {
 	
@@ -45,15 +46,16 @@ public class MeasurementController {
 		GeometryJSON gjson = new GeometryJSON();
 		Reader reader = new StringReader(geoJson);
 		
-		Volume volume = service.getVolume(gjson.readPolygon(reader).getCoordinates(), basePlane);
+		Coordinate[] c = gjson.readPolygon(reader).getCoordinates();
 		
-		//String temp1 = "";
-		//String temp2 = "";
-		System.out.println(volume);
+		Volume volume = service.getVolume(c, service.getBasePlane(c));
 		
 		MeasurmentToolsResp mtresp = new MeasurmentToolsResp();
+		//mtresp.setMaxHeight(service.getMax(c));
+		//mtresp.setMinHeight(service.getMin(c));
 		//mtresp.setMessage("Hello message");
 		mtresp.setVolume(volume);
+		mtresp.setBasePlane(service.getBasePlane(c));
 		
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.writeValue(response.getOutputStream(), mtresp);
