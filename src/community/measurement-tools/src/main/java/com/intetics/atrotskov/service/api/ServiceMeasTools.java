@@ -19,5 +19,7 @@ public interface ServiceMeasTools {
 	double getMax(Coordinate[] coords)
 			throws NoSuchAuthorityCodeException, FactoryException, TransformException;
 	double getBasePlane(Coordinate[] coords) throws InvalidGridGeometryException, TransformException, NoSuchAuthorityCodeException, FactoryException;
+	double getArea(Coordinate[] coords) throws NoSuchAuthorityCodeException, FactoryException, TransformException;
+	double getPerimetr(Coordinate[] coords) throws NoSuchAuthorityCodeException, FactoryException, TransformException;
 	
 }

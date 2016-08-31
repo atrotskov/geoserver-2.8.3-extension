@@ -1,11 +1,13 @@
 package com.intetics.atrotskov.service.impl;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.NavigableMap;
 import java.util.TreeMap;
 
 import org.geotools.coverage.grid.InvalidGridGeometryException;
+import org.geotools.geometry.jts.JTSFactoryFinder;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.operation.TransformException;
@@ -16,7 +18,9 @@ import com.intetics.atrotskov.model.CloudEntity;
 import com.intetics.atrotskov.model.Volume;
 import com.intetics.atrotskov.service.api.ServiceMeasTools;
 import com.intetics.atrotskov.transformator.api.Transformator;
-import com.vividsolutions.jts.geom.Coordinate;;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.Polygon;;
 
 public class ServiceGeoTiffImpl implements ServiceMeasTools {
 	
@@ -69,8 +73,12 @@ public class ServiceGeoTiffImpl implements ServiceMeasTools {
 
 	@Override
 	public int getNumberOfPixels(Coordinate[] coords) throws NoSuchAuthorityCodeException, FactoryException, TransformException {
-		// TODO Auto-generated method stub
-		return getStatistics(coords).size();
+		Collection<Integer> collection = getStatistics(coords).values();
+		int sum = 0;
+		for (Integer item : collection) {
+			sum += item;
+		}
+		return sum;
 	}
 	
 	@Override
@@ -89,12 +97,29 @@ public class ServiceGeoTiffImpl implements ServiceMeasTools {
 		return basePlane;
 	}
 	
-	private double getPixelArea() {
-		
-		return 0.5;
+	@Override
+	public double getArea(Coordinate[] coords) throws NoSuchAuthorityCodeException, FactoryException, TransformException {
+		getStatistics(coords);
+		GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory();
+		Polygon polygon = geometryFactory.createPolygon(this.coordinates);
+		return polygon.getArea();
 	}
 	
-	private double getVol(NavigableMap<Double, Integer> cloud, double basePlane) {
+	@Override
+	public double getPerimetr(Coordinate[] coords) throws NoSuchAuthorityCodeException, FactoryException, TransformException {
+		getStatistics(coords);
+		GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory();
+		Polygon polygon = geometryFactory.createPolygon(this.coordinates);
+		return polygon.getLength();
+	}
+	
+	private double getPixelArea() throws TransformException {
+		System.out.println("Pixel area = " + polygonDao.getPixelArea());
+		return polygonDao.getPixelArea();
+		
+	}
+	
+	private double getVol(NavigableMap<Double, Integer> cloud, double basePlane) throws TransformException {
 		double heightSum = 0;		
 		for (Map.Entry<Double, Integer> entry : cloud.entrySet()) {
 			heightSum += (entry.getKey() - basePlane) * entry.getValue();
@@ -127,7 +152,7 @@ public class ServiceGeoTiffImpl implements ServiceMeasTools {
 		
 		coords = trans.transformAllFrom(coords);
 
-		if (isCoordinatesEquals(coords)) {
+		if (!(isCoordinatesEquals(coords))) {
 			this.coordinates = coords;
 			List<CloudEntity> results = polygonDao.getValuesByCoord(coords);
 			TreeMap<Double, Integer> sortedCloud = new TreeMap<>();

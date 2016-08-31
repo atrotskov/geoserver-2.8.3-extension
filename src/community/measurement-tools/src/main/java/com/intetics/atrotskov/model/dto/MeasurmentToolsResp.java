@@ -7,11 +7,25 @@ public class MeasurmentToolsResp {
 	private Volume volume;
 	private double minHeight;
 	private double maxHeight;
+	private double area;
+	private double perimetr;
 	private int pixelCount;
 	private int pixelSkipped;
 	private double basePlane;
 	
-	//private 
+	public double getArea() {
+		return area;
+	}
+	public void setArea(double area) {
+		this.area = area;
+	}
+	public double getPerimetr() {
+		return perimetr;
+	}
+	public void setPerimetr(double perimetr) {
+		this.perimetr = perimetr;
+	}
+	
 	
 	public String getMessage() {
 		return message;

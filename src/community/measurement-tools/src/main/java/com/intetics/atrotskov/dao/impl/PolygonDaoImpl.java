@@ -80,6 +80,12 @@ public class PolygonDaoImpl implements PolygonDao {
 			throws InvalidGridGeometryException, TransformException {
 		return getValuesByCoord(polygon.getCoordinates());
 	}
+	
+	@Override
+	public double getPixelArea() throws TransformException {
+		Envelope2D pixelEnvelop = geometry.gridToWorld(new GridEnvelope2D(0, 0, 1, 1));
+		return pixelEnvelop.height * pixelEnvelop.width;
+	}
 
 	private Coordinate[] getExtremeCorners(Coordinate[] coords) {
 		Coordinate firstCorner = new Coordinate(coords[0]);

@@ -51,11 +51,14 @@ public class MeasurementController {
 		Volume volume = service.getVolume(c, service.getBasePlane(c));
 		
 		MeasurmentToolsResp mtresp = new MeasurmentToolsResp();
-		//mtresp.setMaxHeight(service.getMax(c));
-		//mtresp.setMinHeight(service.getMin(c));
-		//mtresp.setMessage("Hello message");
+		mtresp.setMaxHeight(service.getMax(c));
+		mtresp.setMinHeight(service.getMin(c));
+		mtresp.setMessage("Hello message");
 		mtresp.setVolume(volume);
 		mtresp.setBasePlane(service.getBasePlane(c));
+		mtresp.setArea(service.getArea(c));
+		mtresp.setPerimetr(service.getPerimetr(c));
+		mtresp.setPixelCount(service.getNumberOfPixels(c));
 		
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.writeValue(response.getOutputStream(), mtresp);
