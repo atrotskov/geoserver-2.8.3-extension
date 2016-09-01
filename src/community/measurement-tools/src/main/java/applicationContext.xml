@@ -15,7 +15,7 @@
 	
 	<bean id="checkerDao" class="com.intetics.atrotskov.dao.impl.CheckerDaoImpl"></bean>
 	
-	<bean id="polygonDao" class="com.intetics.atrotskov.dao.impl.PolygonDaoImpl">
+	<bean id="polygonDao" class="com.intetics.atrotskov.dao.impl.PolygonDaoImplTest">
 		<constructor-arg index="0" ref="geoTiffConnection" />
 		<constructor-arg index="1" ref="checkerDao" />
 	</bean>
