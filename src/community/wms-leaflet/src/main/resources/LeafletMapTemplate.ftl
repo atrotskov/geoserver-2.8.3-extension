@@ -38,6 +38,25 @@
         margin: 0 0 5px;
         color: #777;
     }
+    
+    .resp-name {
+    	width: 150px;
+    	display:inline-block; 
+    }
+    
+    .resp-value {
+    	width: 100px;
+    	display:inline-block;
+    }
+    
+    .resp-dim {
+    	width: 50px;
+    	display:inline-block;
+    }
+    
+    .resp-message {
+    	width: 300px;
+    }
 </style>
 
 <div id="map"></div>
@@ -149,7 +168,84 @@
 
     // method that we will use to update the control based on feature properties passed
     info.update = function (props) {
-        this._div.innerHTML = '<h4>Resaults:</h4>' + (props ? props : 'Please draw polygon for the start of measurement');
+    
+    	if (props) {
+    		jsonResp = JSON.parse(props);
+    		var result = '';
+    		if (jsonResp.volume != null) {
+    		
+    			result += '<div><div class = "resp-name">Vol. Cut</div>'
+    			 	+ '<div class = "resp-value">' + Math.round(jsonResp.volume.cut * 1000) / 1000
+    			 	+ '</div><div class = "resp-dim">m&#179;</div></div>';	;
+    		
+    			result += '<div><div class = "resp-name">Vol. Fill</div>'
+    			 	+ '<div class = "resp-value">' + Math.round(jsonResp.volume.fill * 1000) / 1000
+    			 	+ '</div><div class = "resp-dim">m&#179;</div></div>';	;
+    			 	
+    			result += '<div><div class = "resp-name">Vol. total</div>'
+    				+ '<div class = "resp-value">' + Math.round(jsonResp.volume.total * 1000) / 1000
+    				+ '</div><div class = "resp-dim">m&#179;</div></div>';	 
+    		}
+    		
+    		if (jsonResp.basePlane != 0) {
+    			result += '<div><div class = "resp-name">Base Plane</div>'
+    				+ '<div class = "resp-value">' + jsonResp.basePlane 
+    				+ '</div><div class = "resp-dim">m</div></div>';    		
+    		}
+    		
+    		if (jsonResp.minHeight != 0) {
+    			result += '<div><div class = "resp-name">Minimal Height</div>'
+    				+ '<div class = "resp-value">' + jsonResp.minHeight 
+    				+ '</div><div class = "resp-dim">m</div></div>';    		
+    		}
+    		
+    		if (jsonResp.maxHeight != 0) {
+    			result += '<div><div class = "resp-name">Maximal Height</div>'
+    				+ '<div class = "resp-value">' + jsonResp.maxHeight 
+    				+ '</div><div class = "resp-dim">m</div></div>';    		
+    		}
+    		
+    		if (jsonResp.area != 0) {
+    			result += '<div><div class = "resp-name">Area</div>'
+    				+ '<div class = "resp-value">' + Math.round(jsonResp.area * 1000) / 1000 
+    				+ '</div><div class = "resp-dim">m&#178;</div></div>';    		
+    		}
+    		
+    		if (jsonResp.perimetr != 0) {
+    			result += '<div><div class = "resp-name">Perimetr</div>'
+    				+ '<div class = "resp-value">' + Math.round(jsonResp.perimetr * 1000) / 1000 
+    				+ '</div><div class = "resp-dim">m</div></div>';    		
+    		}
+    		
+    		if (jsonResp.pixelCount != 0) {
+    			result += '<div><div class = "resp-name">Readed pixels</div>'
+    				+ '<div class = "resp-value">' + jsonResp.pixelCount 
+    				+ '</div><div class = "resp-dim"></div></div>';    		
+    		}
+    		
+    		if (jsonResp.pixelSkipped != 0) {
+    			result += '<div><div class = "resp-name">Skiped pixels</div>'
+    				+ '<div class = "resp-value">' + jsonResp.pixelSkipped 
+    				+ '</div><div class = "resp-dim"></div></div>';    		
+    		}
+    		
+    		if (jsonResp.message != null) {
+    			result += '<div class = "resp-message">' + jsonResp.message + '</div>';    		
+    		}
+    		
+    		result += '<div><div class = "resp-name">Response time</div>'
+    			+ '<div class = "resp-value">' + jsonResp.responseTime 
+    			+ '</div><div class = "resp-dim">msec</div></div>';
+    		
+    		
+    		
+    		this._div.innerHTML = result;
+    		
+    	} else {
+    		this._div.innerHTML = 'Please draw polygon for the start of measurement';
+    	}
+    	
+        //this._div.innerHTML = '<h4>Resaults:</h4>' + (props ? props : 'Please draw polygon for the start of measurement');
     };
 
     info.addTo(map);

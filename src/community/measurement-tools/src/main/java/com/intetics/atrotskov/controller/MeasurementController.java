@@ -65,7 +65,6 @@ public class MeasurementController {
 			volume = service.getVolume(c, service.getBasePlane(c));
 			mtresp.setMaxHeight(service.getMax(c));
 			mtresp.setMinHeight(service.getMin(c));
-			mtresp.setMessage("Hello message");
 			mtresp.setVolume(volume);
 			mtresp.setBasePlane(service.getBasePlane(c));
 			mtresp.setArea(service.getArea(c));

@@ -7,6 +7,7 @@ import java.util.NavigableMap;
 import java.util.TreeMap;
 
 import org.geotools.coverage.grid.InvalidGridGeometryException;
+import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.JTSFactoryFinder;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.NoSuchAuthorityCodeException;
@@ -20,6 +21,8 @@ import com.intetics.atrotskov.model.Volume;
 import com.intetics.atrotskov.service.api.ServiceMeasTools;
 import com.intetics.atrotskov.transformator.api.Transformator;
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Polygon;;
 
@@ -98,7 +101,9 @@ public class ServiceGeoTiffImpl implements ServiceMeasTools {
 		for (Coordinate coordinate : this.coordinates) {
 			double currentValue = pointDao.getValueByCoord(coordinate);
 			if (checkerDao.isSkip(currentValue)) {
-				throw new SkipVertexException("Point with coordinate [" + coordinate.x + " ; " + coordinate.y + "] is outside of the coverage");
+				throw new SkipVertexException("Point with coordinate ["
+						+ coordinate.x + " ; " + coordinate.y
+						+ "] is outside of the coverage");
 			}
 			if (currentValue < basePlane) {
 				basePlane = currentValue;
@@ -108,28 +113,35 @@ public class ServiceGeoTiffImpl implements ServiceMeasTools {
 	}
 	
 	@Override
-	public double getArea(Coordinate[] coords) throws NoSuchAuthorityCodeException, FactoryException, TransformException {
+	public double getArea(Coordinate[] coords)
+			throws NoSuchAuthorityCodeException, FactoryException, TransformException {
 		getStatistics(coords);
 		GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory();
 		Polygon polygon = geometryFactory.createPolygon(this.coordinates);
-		return polygon.getArea();
+		
+		return trans.transformPolygon(polygon).getArea();
 	}
 	
 	@Override
-	public double getPerimetr(Coordinate[] coords) throws NoSuchAuthorityCodeException, FactoryException, TransformException {
+	public double getPerimetr(Coordinate[] coords)
+			throws NoSuchAuthorityCodeException, FactoryException, TransformException {
 		getStatistics(coords);
 		GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory();
 		Polygon polygon = geometryFactory.createPolygon(this.coordinates);
-		return polygon.getLength();
+		
+		return trans.transformPolygon(polygon).getLength();
 	}
 	
 	private double getPixelArea() throws TransformException {
+		GeometryFactory jf = JTSFactoryFinder.getGeometryFactory(); 
+		jf.
 		System.out.println("Pixel area = " + polygonDao.getPixelArea());
 		return polygonDao.getPixelArea();
 		
 	}
 	
-	private double getVol(NavigableMap<Double, Integer> cloud, double basePlane) throws TransformException {
+	private double getVol(NavigableMap<Double, Integer> cloud, double basePlane)
+			throws TransformException {
 		double heightSum = 0;		
 		for (Map.Entry<Double, Integer> entry : cloud.entrySet()) {
 			heightSum += (entry.getKey() - basePlane) * entry.getValue();
