@@ -9,6 +9,7 @@ import java.util.TreeMap;
 import org.geotools.coverage.grid.InvalidGridGeometryException;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.JTSFactoryFinder;
+import org.opengis.geometry.MismatchedDimensionException;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.operation.TransformException;
@@ -97,7 +98,7 @@ public class ServiceGeoTiffImpl implements ServiceMeasTools {
 		
 		getStatistics(coords);
 		
-		double basePlane = 499;					// 499 is unreal minimal height which must have been override during first iteration
+		double basePlane = 6000;					// 6000 is unreal minimal height which must have been override during first iteration
 		for (Coordinate coordinate : this.coordinates) {
 			double currentValue = pointDao.getValueByCoord(coordinate);
 			if (checkerDao.isSkip(currentValue)) {
@@ -132,16 +133,18 @@ public class ServiceGeoTiffImpl implements ServiceMeasTools {
 		return trans.transformPolygon(polygon).getLength();
 	}
 	
-	private double getPixelArea() throws TransformException {
-		GeometryFactory jf = JTSFactoryFinder.getGeometryFactory(); 
-		jf.
-		System.out.println("Pixel area = " + polygonDao.getPixelArea());
-		return polygonDao.getPixelArea();
+	private double getPixelArea() throws TransformException, MismatchedDimensionException, NoSuchAuthorityCodeException, FactoryException {
+		GeometryFactory jf = JTSFactoryFinder.getGeometryFactory();
+		Polygon polygon = jf.createPolygon(polygonDao.getPixelArea());
+		double res = trans.transformPolygon(polygon).getArea();
+		System.out.println("Pixel area: " + res);
+		
+		return res;
 		
 	}
 	
 	private double getVol(NavigableMap<Double, Integer> cloud, double basePlane)
-			throws TransformException {
+			throws TransformException, MismatchedDimensionException, NoSuchAuthorityCodeException, FactoryException {
 		double heightSum = 0;		
 		for (Map.Entry<Double, Integer> entry : cloud.entrySet()) {
 			heightSum += (entry.getKey() - basePlane) * entry.getValue();

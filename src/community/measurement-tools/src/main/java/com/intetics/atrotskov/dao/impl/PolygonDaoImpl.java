@@ -85,9 +85,19 @@ public class PolygonDaoImpl implements PolygonDao {
 	}
 	
 	@Override
-	public Envelope2D getPixelArea() throws TransformException {
-		Envelope2D pixelEnvelop = geometry.gridToWorld(new GridEnvelope2D(0, 0, 1, 1));
-		return pixelEnvelop;
+	public Coordinate[] getPixelArea() throws TransformException {
+		Envelope2D pe1 = geometry.gridToWorld(new GridEnvelope2D(0, 0, 1, 1));
+		Envelope2D pe2 = geometry.gridToWorld(new GridEnvelope2D(1, 0, 1, 1));
+		Envelope2D pe3 = geometry.gridToWorld(new GridEnvelope2D(1, 1, 1, 1));
+		Envelope2D pe4 = geometry.gridToWorld(new GridEnvelope2D(0, 1, 1, 1));
+		
+		Coordinate c1 = new Coordinate(pe1.getCenterX(), pe1.getCenterY());
+		Coordinate c2 = new Coordinate(pe2.getCenterX(), pe2.getCenterY());
+		Coordinate c3 = new Coordinate(pe3.getCenterX(), pe3.getCenterY());
+		Coordinate c4 = new Coordinate(pe4.getCenterX(), pe4.getCenterY());
+		Coordinate c5 = new Coordinate(pe1.getCenterX(), pe1.getCenterY());
+		Coordinate[] coords = {c1, c2, c3, c4, c5};
+		return coords;
 	}
 
 	private Coordinate[] getExtremeCorners(Coordinate[] coords) {

@@ -14,6 +14,6 @@ public interface PolygonDao {
 	
 	List<CloudEntity> getValuesByCoord(Coordinate[] coords) throws InvalidGridGeometryException, TransformException;
 	List<CloudEntity> getValuesByPolygon(Polygon polygon) throws InvalidGridGeometryException, TransformException;
-	Envelope2D getPixelArea() throws TransformException;
+	Coordinate[] getPixelArea() throws TransformException;
 
 }
