@@ -12,12 +12,19 @@ public class MeasurmentToolsResp {
 	private int pixelCount;
 	private int pixelSkipped;
 	private double basePlane;
+	private long responseTime;
 	
 	public double getArea() {
 		return area;
 	}
 	public void setArea(double area) {
 		this.area = area;
+	}
+	public long getResponseTime() {
+		return responseTime;
+	}
+	public void setResponseTime(long responseTime) {
+		this.responseTime = responseTime;
 	}
 	public double getPerimetr() {
 		return perimetr;

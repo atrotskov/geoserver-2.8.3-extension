@@ -12,6 +12,7 @@ import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.operation.TransformException;
 
+import com.intetics.atrotskov.dao.api.CheckerDao;
 import com.intetics.atrotskov.dao.api.PointDao;
 import com.intetics.atrotskov.dao.api.PolygonDao;
 import com.intetics.atrotskov.model.CloudEntity;
@@ -29,17 +30,21 @@ public class ServiceGeoTiffImpl implements ServiceMeasTools {
 	
 	private PointDao pointDao;
 	private PolygonDao polygonDao;
+	private CheckerDao checkerDao;
 	private Transformator trans;
 	
-	public ServiceGeoTiffImpl(PolygonDao polygonDao, Transformator trans, PointDao pointDao) {
+	public ServiceGeoTiffImpl(PolygonDao polygonDao, Transformator trans,
+			PointDao pointDao, CheckerDao checkerDao) {
 		this.polygonDao = polygonDao;
 		this.trans = trans;
 		this.pointDao = pointDao;
+		this.checkerDao = checkerDao;
 	}
 	
 	@Override
 	public Volume getVolume(Coordinate[] coords, double basePlane)
-			throws InvalidGridGeometryException, TransformException, NoSuchAuthorityCodeException, FactoryException {
+			throws InvalidGridGeometryException, TransformException,
+			NoSuchAuthorityCodeException, FactoryException {
 		
 		long startTime1 = System.currentTimeMillis();
 		
@@ -72,7 +77,8 @@ public class ServiceGeoTiffImpl implements ServiceMeasTools {
 	}
 
 	@Override
-	public int getNumberOfPixels(Coordinate[] coords) throws NoSuchAuthorityCodeException, FactoryException, TransformException {
+	public int getNumberOfPixels(Coordinate[] coords)
+			throws NoSuchAuthorityCodeException, FactoryException, TransformException {
 		Collection<Integer> collection = getStatistics(coords).values();
 		int sum = 0;
 		for (Integer item : collection) {
@@ -83,13 +89,17 @@ public class ServiceGeoTiffImpl implements ServiceMeasTools {
 	
 	@Override
 	public double getBasePlane(Coordinate[] coords)
-			throws InvalidGridGeometryException, TransformException, NoSuchAuthorityCodeException, FactoryException {
+			throws InvalidGridGeometryException, TransformException,
+			NoSuchAuthorityCodeException, FactoryException, SkipVertexException {
 		
 		getStatistics(coords);
 		
-		double basePlane = 7000;					// 7000 is unreal minimal height which must have been override during first iteration
+		double basePlane = 499;					// 499 is unreal minimal height which must have been override during first iteration
 		for (Coordinate coordinate : this.coordinates) {
 			double currentValue = pointDao.getValueByCoord(coordinate);
+			if (checkerDao.isSkip(currentValue)) {
+				throw new SkipVertexException("Point with coordinate [" + coordinate.x + " ; " + coordinate.y + "] is outside of the coverage");
+			}
 			if (currentValue < basePlane) {
 				basePlane = currentValue;
 			}

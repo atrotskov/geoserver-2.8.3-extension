@@ -13,12 +13,16 @@
 		<constructor-arg index="1" ref="serviceMTools" />
 	</bean>
 	
+	<bean id="checkerDao" class="com.intetics.atrotskov.dao.impl.CheckerDaoImpl"></bean>
+	
 	<bean id="polygonDao" class="com.intetics.atrotskov.dao.impl.PolygonDaoImpl">
 		<constructor-arg index="0" ref="geoTiffConnection" />
+		<constructor-arg index="1" ref="checkerDao" />
 	</bean>
 	
 	<bean id="pointDao" class="com.intetics.atrotskov.dao.impl.PointDaoImpl">
 		<constructor-arg index="0" ref="geoTiffConnection" />
+		<constructor-arg index="1" ref="checkerDao" />
 	</bean>
 	
 	<bean id="transformator" class="com.intetics.atrotskov.transformator.impl.TransformatorImpl">
@@ -29,6 +33,7 @@
 		<constructor-arg index="0" ref="polygonDao" />
 		<constructor-arg index="1" ref="transformator" />
 		<constructor-arg index="2" ref="pointDao"/>
+		<constructor-arg index="3" ref="checkerDao" />
 	</bean>
 
 	<bean id="measurementControllerImpl" class="org.geoserver.platform.Service">

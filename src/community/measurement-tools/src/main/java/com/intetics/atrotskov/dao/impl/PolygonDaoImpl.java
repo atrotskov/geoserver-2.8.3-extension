@@ -17,6 +17,7 @@ import org.geotools.geometry.jts.JTSFactoryFinder;
 import org.opengis.referencing.operation.TransformException;
 
 import com.intetics.atrotskov.connection.api.Connection;
+import com.intetics.atrotskov.dao.api.CheckerDao;
 import com.intetics.atrotskov.dao.api.PolygonDao;
 import com.intetics.atrotskov.model.CloudEntity;
 import com.vividsolutions.jts.geom.Coordinate;
@@ -26,9 +27,11 @@ import com.vividsolutions.jts.geom.Polygon;
 public class PolygonDaoImpl implements PolygonDao {
 
 	private Connection<GridCoverage2DReader> conn;
+	private CheckerDao checkerDao;
 
-	public PolygonDaoImpl(Connection<GridCoverage2DReader> conn) {
+	public PolygonDaoImpl(Connection<GridCoverage2DReader> conn, CheckerDao checkerDao) {
 		this.conn = conn;
+		this.checkerDao = checkerDao;
 	}
 
 	private GridCoverage2D coverage;

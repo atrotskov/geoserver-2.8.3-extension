@@ -6,6 +6,7 @@ import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.operation.TransformException;
 
 import com.intetics.atrotskov.model.Volume;
+import com.intetics.atrotskov.service.impl.SkipVertexException;
 import com.vividsolutions.jts.geom.Coordinate;
 
 public interface ServiceMeasTools {
@@ -18,7 +19,7 @@ public interface ServiceMeasTools {
 			throws NoSuchAuthorityCodeException, FactoryException, TransformException;
 	double getMax(Coordinate[] coords)
 			throws NoSuchAuthorityCodeException, FactoryException, TransformException;
-	double getBasePlane(Coordinate[] coords) throws InvalidGridGeometryException, TransformException, NoSuchAuthorityCodeException, FactoryException;
+	double getBasePlane(Coordinate[] coords) throws InvalidGridGeometryException, TransformException, NoSuchAuthorityCodeException, FactoryException, SkipVertexException;
 	double getArea(Coordinate[] coords) throws NoSuchAuthorityCodeException, FactoryException, TransformException;
 	double getPerimetr(Coordinate[] coords) throws NoSuchAuthorityCodeException, FactoryException, TransformException;
 	

@@ -20,53 +20,86 @@ import com.intetics.atrotskov.connection.api.Connection;
 import com.intetics.atrotskov.model.Volume;
 import com.intetics.atrotskov.model.dto.MeasurmentToolsResp;
 import com.intetics.atrotskov.service.api.ServiceMeasTools;
+import com.intetics.atrotskov.service.impl.SkipVertexException;
 import com.vividsolutions.jts.geom.Coordinate;
 
 public class MeasurementController {
-	
+
 	private Connection<GridCoverage2DReader> conn;
 	private ServiceMeasTools service;
-	
-	public MeasurementController(Connection<GridCoverage2DReader> conn, ServiceMeasTools service){
+
+	public MeasurementController(Connection<GridCoverage2DReader> conn, ServiceMeasTools service) {
 		this.conn = conn;
 		this.service = service;
 	}
-	
-	public void getPolygonData(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException, InvalidGridGeometryException,
-			TransformException, NoSuchAuthorityCodeException, FactoryException {
-		//long startTime = System.currentTimeMillis();
-		
+
+	public void getPolygonData(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+		long startTime = System.currentTimeMillis();
+
 		String layerName = request.getParameter("layer");
 		String geoJson = request.getParameter("geoData");
 		double basePlane = Double.parseDouble(request.getParameter("basePlane"));
-		
-		conn.initConnection(layerName);
-		
+
+		Volume volume = null;
+		MeasurmentToolsResp mtresp = new MeasurmentToolsResp();
+
+		try {
+			conn.initConnection(layerName);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 		GeometryJSON gjson = new GeometryJSON();
 		Reader reader = new StringReader(geoJson);
-		
-		Coordinate[] c = gjson.readPolygon(reader).getCoordinates();
-		
-		Volume volume = service.getVolume(c, service.getBasePlane(c));
-		
-		MeasurmentToolsResp mtresp = new MeasurmentToolsResp();
-		mtresp.setMaxHeight(service.getMax(c));
-		mtresp.setMinHeight(service.getMin(c));
-		mtresp.setMessage("Hello message");
-		mtresp.setVolume(volume);
-		mtresp.setBasePlane(service.getBasePlane(c));
-		mtresp.setArea(service.getArea(c));
-		mtresp.setPerimetr(service.getPerimetr(c));
-		mtresp.setPixelCount(service.getNumberOfPixels(c));
-		
+
+		Coordinate[] c = null;
+		try {
+			c = gjson.readPolygon(reader).getCoordinates();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		try {
+			volume = service.getVolume(c, service.getBasePlane(c));
+			mtresp.setMaxHeight(service.getMax(c));
+			mtresp.setMinHeight(service.getMin(c));
+			mtresp.setMessage("Hello message");
+			mtresp.setVolume(volume);
+			mtresp.setBasePlane(service.getBasePlane(c));
+			mtresp.setArea(service.getArea(c));
+			mtresp.setPerimetr(service.getPerimetr(c));
+			mtresp.setPixelCount(service.getNumberOfPixels(c));
+		} catch (SkipVertexException e) {
+			mtresp.setMessage(e.getMessage());
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			mtresp.setMessage("Polygon is outside of the layer");
+			e.printStackTrace();
+		} catch (InvalidGridGeometryException e) {
+			mtresp.setMessage("Catch InvalidGridGeometryException exception");
+			e.printStackTrace();
+		} catch (TransformException e) {
+			mtresp.setMessage("Catch TransformException exception");
+			e.printStackTrace();
+		} catch (FactoryException e) {
+			mtresp.setMessage("Catch FactoryException exception");
+			e.printStackTrace();
+		}
+
 		ObjectMapper mapper = new ObjectMapper();
-		mapper.writeValue(response.getOutputStream(), mtresp);
-		
+		mtresp.setResponseTime(System.currentTimeMillis() - startTime);
+
+		try {
+			mapper.writeValue(response.getOutputStream(), mtresp);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
-	
-	public void getPointData(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException {
-		
+
+	public void getPointData(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+
 	}
 }

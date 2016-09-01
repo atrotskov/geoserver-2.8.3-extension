@@ -12,18 +12,22 @@ import org.geotools.geometry.DirectPosition2D;
 import org.opengis.referencing.operation.TransformException;
 
 import com.intetics.atrotskov.connection.api.Connection;
+import com.intetics.atrotskov.dao.api.CheckerDao;
 import com.intetics.atrotskov.dao.api.PointDao;
 import com.vividsolutions.jts.geom.Coordinate;
 
 public class PointDaoImpl implements PointDao {
 	private Connection<GridCoverage2DReader> conn;
-
-	public PointDaoImpl(Connection<GridCoverage2DReader> conn) {
+	private CheckerDao checkerDao;
+	
+	public PointDaoImpl(Connection<GridCoverage2DReader> conn, CheckerDao checkerDao) {
 		this.conn = conn;
+		this.checkerDao = checkerDao;
 	}
 
 	private GridCoverage2D coverage;
 	private GridGeometry2D geometry;
+	
 	
 	private void setFields(){
 		this.coverage = conn.getCoverage();
