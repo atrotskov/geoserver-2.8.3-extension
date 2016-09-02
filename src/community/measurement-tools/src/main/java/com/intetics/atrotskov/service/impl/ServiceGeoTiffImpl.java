@@ -7,7 +7,6 @@ import java.util.NavigableMap;
 import java.util.TreeMap;
 
 import org.geotools.coverage.grid.InvalidGridGeometryException;
-import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.JTSFactoryFinder;
 import org.opengis.geometry.MismatchedDimensionException;
 import org.opengis.referencing.FactoryException;
@@ -22,8 +21,6 @@ import com.intetics.atrotskov.model.Volume;
 import com.intetics.atrotskov.service.api.ServiceMeasTools;
 import com.intetics.atrotskov.transformator.api.Transformator;
 import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Polygon;;
 

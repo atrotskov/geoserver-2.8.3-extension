@@ -113,11 +113,15 @@
 
     var layerBingAerial = new BingLayer('http://t{s}.tiles.virtualearth.net/tiles/a{q}.jpeg?g=2732', {
         subdomains: ['0', '1', '2', '3', '4'],
-        attribution: '&copy; <a href="http://bing.com/maps">Bing Maps</a>'
+        attribution: '&copy; <a href="http://bing.com/maps">Bing Maps</a>',
+        maxNativeZoom: 19,
+        maxZoom: 25
     });
 
     var layerMapboxImagery = new L.tileLayer('http://{s}.tiles.mapbox.com/v4/openstreetmap.map-inh7ifmo/{z}/{x}/{y}.png?access_token=pk.eyJ1Ijoib3BlbnN0cmVldG1hcCIsImEiOiJhNVlHd29ZIn0.ti6wATGDWOmCnCYen-Ip7Q', {
-        attribution: '&copy; <a href="https://www.mapbox.com/about/maps/">Mapbox</a>'
+        attribution: '&copy; <a href="https://www.mapbox.com/about/maps/">Mapbox</a>',
+        maxNativeZoom: 19,
+        maxZoom: 25
     });
 
     var southWest = L.latLng(${minY}, ${minX}),
@@ -126,6 +130,7 @@
 
     var map = L.map('map', {
         layers: [geoServerWmsLayer, layerOSM],
+        maxZoom: 100,
         /*zoom: 13,
         center: bounds.getCenter()*/
     });
