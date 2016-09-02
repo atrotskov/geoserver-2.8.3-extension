@@ -172,10 +172,9 @@
     };
 
     // method that we will use to update the control based on feature properties passed
-    info.update = function (props) {
+    info.update = function (jsonResp) {
     
-    	if (props) {
-    		jsonResp = JSON.parse(props);
+    	if (jsonResp) {
     		var result = '';
     		if (jsonResp.volume != null) {
     		
@@ -188,7 +187,8 @@
     			 	+ '</div><div class = "resp-dim">m&#179;</div></div>';	;
     			 	
     			result += '<div><div class = "resp-name">Vol. total</div>'
-    				+ '<div class = "resp-value">' + Math.round(jsonResp.volume.total * 1000) / 1000
+    				+ '<div class = "resp-value">'
+    				+ Math.round((jsonResp.volume.cut + Math.abs(jsonResp.volume.fill)) * 1000) / 1000
     				+ '</div><div class = "resp-dim">m&#179;</div></div>';	 
     		}
     		

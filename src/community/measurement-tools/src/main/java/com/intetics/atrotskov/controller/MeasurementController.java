@@ -12,10 +12,10 @@ import org.geotools.coverage.grid.InvalidGridGeometryException;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.geojson.geom.GeometryJSON;
 import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.operation.TransformException;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.intetics.atrotskov.connection.api.Connection;
 import com.intetics.atrotskov.model.Volume;
 import com.intetics.atrotskov.model.dto.MeasurmentToolsResp;
@@ -86,12 +86,16 @@ public class MeasurementController {
 			mtresp.setMessage("Catch FactoryException exception");
 			e.printStackTrace();
 		}
+		
+		GsonBuilder gsonBuilder = new GsonBuilder();
+		Gson gson = gsonBuilder.create();
 
-		ObjectMapper mapper = new ObjectMapper();
+		
 		mtresp.setResponseTime(System.currentTimeMillis() - startTime);
 
 		try {
-			mapper.writeValue(response.getOutputStream(), mtresp);
+			response.setContentType("application/json");
+			response.getWriter().write(gson.toJson(mtresp));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
